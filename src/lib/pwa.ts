@@ -37,26 +37,34 @@ self.addEventListener('fetch', e => {
 
 export function registerServiceWorker() {
   if (!('serviceWorker' in navigator)) return;
-  const blob  = new Blob([SW_CODE], { type: 'text/javascript' });
-  const swUrl = URL.createObjectURL(blob);
-  navigator.serviceWorker.register(swUrl);
+  try {
+    const blob  = new Blob([SW_CODE], { type: 'text/javascript' });
+    const swUrl = URL.createObjectURL(blob);
+    navigator.serviceWorker.register(swUrl).catch(() => {});
+  } catch {
+    // Ignore SW bootstrap failures on restricted browsers/private mode.
+  }
 }
 
 // ─── PWA Manifest (inline blob) ───────────────────────────────────
 export function injectManifest() {
-  const manifest = {
-    name:             'مواقيت الصلاة',
-    short_name:       'Salat',
-    start_url:        '.',
-    display:          'fullscreen',
-    background_color: '#0a0a2e',
-    theme_color:      '#0a0a2e',
-    orientation:      'any',
-    icons:            [],
-  };
-  const blob  = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
-  const link  = document.createElement('link');
-  link.rel    = 'manifest';
-  link.href   = URL.createObjectURL(blob);
-  document.head.appendChild(link);
+  try {
+    const manifest = {
+      name:             'مواقيت الصلاة',
+      short_name:       'Salat',
+      start_url:        '.',
+      display:          'fullscreen',
+      background_color: '#0a0a2e',
+      theme_color:      '#0a0a2e',
+      orientation:      'any',
+      icons:            [],
+    };
+    const blob  = new Blob([JSON.stringify(manifest)], { type: 'application/json' });
+    const link  = document.createElement('link');
+    link.rel    = 'manifest';
+    link.href   = URL.createObjectURL(blob);
+    document.head.appendChild(link);
+  } catch {
+    // Ignore manifest injection failures.
+  }
 }
