@@ -4,7 +4,7 @@ const CACHE_VERSION = __BUILD_ID__;
 
 const SW_CODE = `
 const CACHE = '${CACHE_VERSION}';
-const ASSETS = ['./', './adhan.mp3'];
+const ASSETS = ['./', './athan.mp3', './athan-fajr.mp3'];
 
 self.addEventListener('install', e => {
   e.waitUntil(

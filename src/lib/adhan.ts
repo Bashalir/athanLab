@@ -2,18 +2,18 @@ import type { PrayerTimes } from '../types';
 import { NAMES_AR, NAMES_FR } from './prayerCalc';
 
 // ─── Adhan Audio ──────────────────────────────────────────────────
-let adhanAudio: HTMLAudioElement | null = null;
+const audioCache: Record<string, HTMLAudioElement> = {};
 
-function getAudio(): HTMLAudioElement {
-  if (!adhanAudio) {
-    adhanAudio = new Audio('./adhan.mp3');
-    adhanAudio.preload = 'auto';
+function getAudio(src: string): HTMLAudioElement {
+  if (!audioCache[src]) {
+    audioCache[src] = new Audio(src);
+    audioCache[src].preload = 'auto';
   }
-  return adhanAudio;
+  return audioCache[src];
 }
 
 export function pauseAdhan() {
-  getAudio().pause();
+  Object.values(audioCache).forEach(a => a.pause());
 }
 
 // ─── Adhan Trigger ────────────────────────────────────────────────
@@ -42,7 +42,8 @@ export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
 }
 
 export function triggerAdhan(prayerKey: string) {
-  const audio = getAudio();
+  const src = prayerKey === 'fajr' ? './athan-fajr.mp3' : './athan.mp3';
+  const audio = getAudio(src);
   audio.currentTime = 0;
   audio.play().catch(() => {});
   showAdhanAlert(prayerKey);
@@ -99,12 +100,13 @@ export function showAdhanAlert(prayerKey: string) {
 
   document.body.appendChild(div);
 
+  const src = prayerKey === 'fajr' ? './athan-fajr.mp3' : './athan.mp3';
   div.querySelector('#adhan-close-btn')?.addEventListener('click', () => {
-    getAudio().pause();
+    getAudio(src).pause();
     div.remove();
   });
 
-  const audio = getAudio();
+  const audio = getAudio(src);
   audio.onended = () => setTimeout(() => div.remove(), 3000);
   setTimeout(() => { if (div.parentNode) div.remove(); }, 10 * 60 * 1000);
 }
