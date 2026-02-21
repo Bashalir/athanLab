@@ -55,14 +55,16 @@ export function App() {
     }
   }, [nowMins, state.prayers, state.fakeMinutes]);
 
-  // Dim overlay : 0 le jour, jusqu'à 0.55 la nuit (Isha → Fajr)
+  // Overlay actif tout le temps sauf ±15 min autour de chaque prière
   const nightDim = (() => {
-    if (!state.prayers) return 0;
-    const { ishaMins, fajrMins } = state.prayers._raw;
-    const isha  = ishaMins  ?? 0;
-    const fajr  = fajrMins  ?? 0;
-    if (nowMins >= isha || nowMins < fajr) return 0.55;
-    return 0;
+    if (!state.prayers) return 0.65;
+    const { fajrMins, sunriseMins, dhuhrMins, asrMins, maghribMins, ishaMins } = state.prayers._raw;
+    const WINDOW = 15;
+    const times = [fajrMins, sunriseMins, dhuhrMins, asrMins, maghribMins, ishaMins];
+    for (const t of times) {
+      if (t !== null && t !== undefined && nowMins >= t - WINDOW && nowMins <= t + WINDOW) return 0;
+    }
+    return 0.65;
   })();
 
   return (
