@@ -259,14 +259,19 @@ export function SkySection({
     </div>
   );
 }
-  const getHijriInfo = () => {
+const getHijriInfo = () => {
     const now = new Date();
-    const fallbackDate = new Intl.DateTimeFormat('fr-FR', {
-      day: 'numeric', month: 'long', year: 'numeric',
-    }).format(now);
+    const monthsFr = [
+      'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
+      'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre',
+    ];
+    const fallbackDate = `${now.getDate()} ${monthsFr[now.getMonth()] || ''} ${now.getFullYear()}`.trim();
 
     // iOS 9 can miss Intl calendar extensions. Keep rendering stable.
     try {
+      if (typeof Intl === 'undefined' || typeof Intl.DateTimeFormat !== 'function') {
+        throw new Error('Intl unavailable');
+      }
       const hijriDateFmt = new Intl.DateTimeFormat('fr-FR-u-ca-islamic', {
         day: 'numeric', month: 'long', year: 'numeric',
       });
