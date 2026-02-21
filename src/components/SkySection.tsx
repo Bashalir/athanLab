@@ -177,23 +177,7 @@ export function SkySection({
       <div className="sky-bg" ref={bgRef} />
       <div className="screen-frame" />
       <div className="islamic-grid" />
-      
-      {/* Structure de la Porte de Mosquée */}
-      <div className="mosque-arch-overlay">
-        {/* Rendu Vectoriel Intégré (SVG Inline) */}
-        <img
-          src="/ramadan.svg"
-          className="arch-image"
-          alt=""
-          aria-hidden="true"
-          decoding="async"
-          onError={(e) => { e.currentTarget.style.display = 'none'; }}
-        />
-        <div className="fanoos left"><div className="fanoos-chain" /><div className="fanoos-body"><div className="fanoos-light" /></div></div>
-        <div className="fanoos right"><div className="fanoos-chain" /><div className="fanoos-body"><div className="fanoos-light" /></div></div>
-      </div>
 
-      <div className="central-ornament" />
       <div className="sun-halo" ref={haloRef} />
 
       {/* Moon */}

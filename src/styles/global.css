@@ -112,19 +112,12 @@ html.no-css-vars .loading-spinner {
   position: absolute;
   inset: 0;
   z-index: 1;
-  opacity: var(--opacity-pattern);
+  opacity: 0.06;
   pointer-events: none;
-  background-size: 50px 50px;
-  animation: patternMove 120s linear infinite;
+  background-size: 28px 28px;
   background-image:
-    radial-gradient(circle at 50% 50%, transparent 60%, #ffffff 61%, #ffffff 63%, transparent 64%),
-    linear-gradient(45deg, transparent 48%, #ffffff 49%, transparent 51%),
-    linear-gradient(-45deg, transparent 48%, #ffffff 49%, transparent 51%);
-}
-
-@keyframes patternMove {
-  from { background-position: 0 0; }
-  to   { background-position: 50px 50px; }
+    linear-gradient(0deg, rgba(255,255,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
 }
 
 /* ─── MOSQUE ARCH ARCHITECTURE ────────────────────────────────────── */
@@ -205,28 +198,22 @@ html.no-css-vars .loading-spinner {
 
 /* ─── CENTRAL ORNAMENT ────────────────────────────────────────────── */
 .central-ornament {
-  position: absolute;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80vmax;
-  height: 80vmax;
-  pointer-events: none;
-  z-index: 1;
-  opacity: var(--opacity-ornament);
-  background-image:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 1px, transparent 1px, transparent 12px),
-    radial-gradient(circle, transparent 30%, rgba(255,255,255,0.1) 31%, transparent 32%);
-  mask-image: radial-gradient(circle, black 0%, transparent 70%);
-  -webkit-mask-image: radial-gradient(circle, black 0%, transparent 70%);
-  animation: slowSpin 180s linear infinite;
+  display: none;
 }
 
-@supports (background: repeating-conic-gradient(from 0deg, #fff 0deg 1deg, transparent 1deg 2deg)) {
-  .central-ornament {
-    background-image:
-      repeating-conic-gradient(from 0deg, rgba(255,255,255,0.1) 0deg 2deg, transparent 2deg 15deg),
-      radial-gradient(circle, transparent 30%, rgba(255,255,255,0.1) 31%, transparent 32%);
-  }
+/* Disable heavy decorative layers on old devices */
+.mosque-arch-overlay,
+.arch-image,
+.fanoos {
+  display: none;
+}
+
+.fanoos-chain,
+.fanoos-body,
+.fanoos-body::before,
+.fanoos-body::after,
+.fanoos-body > .fanoos-light {
+  animation: none !important;
 }
 
 .sun-halo {
