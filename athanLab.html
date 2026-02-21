@@ -1,0 +1,1563 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0a0a2e">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>مواقيت الصلاة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Outfit:wght@200;300;400;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --sky-top: #0a0a2e;
+    --sky-bottom: #0d1b4b;
+    --sun-color: #fff7a1;
+    --sun-glow: rgba(255,200,50,0.4);
+    --text-time: rgba(255,255,255,0.92);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* ─── LAYOUT ─────────────────────────────────────────────────── */
+  #app {
+    width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #sky-section {
+    flex: 3;
+    position: relative;
+    overflow: hidden;
+    transition: background 3s ease;
+  }
+
+  #prayer-section {
+    flex: 1;
+    display: flex;
+    align-items: stretch;
+    background: rgba(5,5,8,0.96);
+    backdrop-filter: blur(20px);
+    border-top: none;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* ─── SKY GRADIENT ───────────────────────────────────────────── */
+  #sky-bg {
+    position: absolute; inset: 0;
+    transition: background 8s ease;
+  }
+
+  /* ─── CSS BEAM ──────────────────────────────────────────────── */
+  #sun-halo {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+    transition: background 3s ease, opacity 4s ease;
+  }
+
+  /* ─── TOP BAR ───────────────────────────────────────────────── */
+  #top-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    z-index: 20;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 14px 0 16px;
+    background: rgba(0,0,0,0.18);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    font-size: 0.72rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.55);
+    font-weight: 300;
+  }
+  #top-bar-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  #top-bar-city {
+    color: rgba(255,255,255,0.7);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+  #top-bar-temp {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.85rem;
+    font-weight: 300;
+  }
+  #top-bar-desc {
+    color: rgba(255,255,255,0.38);
+  }
+  #top-bar-icon {
+    font-size: 1rem;
+    opacity: 0.8;
+  }
+  #top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #top-bar-wind {
+    color: rgba(255,255,255,0.35);
+    font-size: 0.68rem;
+  }
+
+  /* ─── STARS ──────────────────────────────────────────────────── */
+
+  /* ─── LANDSCAPE ──────────────────────────────────────────────── */
+  /* ─── TIME DISPLAY ───────────────────────────────────────────── */
+  #time-display {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    z-index: 5;
+  }
+
+  #clock {
+    font-family: 'Outfit', sans-serif;
+    font-weight: 100;
+    font-size: clamp(6rem, 22vw, 13rem);
+    color: rgba(255,255,255,0.92);
+    letter-spacing: 0.06em;
+    text-shadow: 0 4px 60px rgba(0,0,0,0.5), 0 0 120px rgba(0,0,0,0.25);
+    line-height: 1;
+  }
+
+  #date-display {
+    font-size: clamp(1rem, 3vw, 1.6rem);
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 12px;
+    font-weight: 300;
+  }
+
+  #next-prayer-info {
+    width: 100%;
+    padding: 9px 24px;
+    font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+    font-weight: 500;
+    color: rgba(255,255,255,0.85);
+    background: rgba(5,5,8,0.82);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(46,204,113,0.25);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    letter-spacing: 0.12em;
+    text-align: center;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* ─── PRAYER TIMES BAR ───────────────────────────────────────── */
+  .prayer-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 4px;
+    border-right: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+    transition: background 0.5s ease, flex 0.4s ease;
+    cursor: default;
+    overflow: hidden;
+  }
+  .prayer-item:last-child { border-right: none; }
+
+  .prayer-item.active {
+    flex: 2;
+    background: rgba(255,255,255,0.08);
+  }
+  .prayer-item.active::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, rgba(46,204,113,0.8), transparent);
+  }
+  .prayer-item.past {
+    opacity: 0.35;
+  }
+
+  .prayer-name-ar {
+    font-family: 'Amiri', serif;
+    font-size: clamp(1.5rem, 4vw, 2rem);
+    color: rgba(255,255,255,0.95); font-weight: 700;
+    line-height: 1;
+    transition: font-size 0.4s ease;
+  }
+  .prayer-item.active .prayer-name-ar {
+    font-size: clamp(2.2rem, 6vw, 3.2rem);
+    color: #2ecc71;
+  }
+  .prayer-name-fr {
+    font-size: clamp(0.7rem, 1.8vw, 1rem);
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 400;
+    transition: font-size 0.4s ease;
+  }
+  .prayer-item.active .prayer-name-fr {
+    font-size: clamp(0.9rem, 2vw, 1.2rem);
+    color: rgba(46,204,113,0.5);
+  }
+  .prayer-time {
+    font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+    font-weight: 300;
+    color: rgba(255,255,255,0.95); font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-top: 2px;
+    transition: font-size 0.4s ease;
+  }
+  .prayer-item.active .prayer-time {
+    font-size: clamp(2rem, 6vw, 3rem);
+    font-weight: 300;
+    background: linear-gradient(135deg, #a8ff78 0%, #2ecc71 50%, #1a9e5c 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.08em;
+  }
+
+  /* ─── SETTINGS PANEL ─────────────────────────────────────────── */
+  #settings-btn {
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.2);
+    width: 28px; height: 28px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    transition: color 0.3s, transform 0.4s;
+    padding: 0;
+  }
+  #settings-btn:hover { color: rgba(255,255,255,0.7); transform: rotate(60deg); }
+
+  #settings-panel {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: rgba(4,5,18,0.97);
+    backdrop-filter: blur(24px);
+    display: none;
+    flex-direction: column;
+    overflow-y: auto;
+  }
+  #settings-panel.open { display: flex; }
+
+  #settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    flex-shrink: 0;
+  }
+  #settings-title-main {
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.8);
+  }
+  #settings-close {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.7);
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  #settings-close:hover { background: rgba(255,255,255,0.12); color: white; }
+
+  #settings-body {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    max-width: 520px;
+    width: 100%;
+    margin: 0 auto;
+  }
+
+  .setting-section {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .setting-title {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .setting-row { display: flex; flex-direction: column; gap: 8px; }
+  .settings-input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 0.9rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .settings-input:focus { border-color: rgba(46,204,113,0.5); }
+  .settings-btn-row { display: flex; gap: 8px; }
+  .s-btn {
+    flex: 1;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.75);
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-family: 'Outfit', sans-serif;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .s-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+  .s-btn.primary { background: rgba(46,204,113,0.12); border-color: rgba(46,204,113,0.35); color: #2ecc71; }
+  .s-btn.primary:hover { background: rgba(46,204,113,0.22); }
+  .method-select, .weather-service-select {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    padding: 11px 14px;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+  }
+  .method-select option, .weather-service-select option { background: #08091c; }
+  .file-label {
+    display: block;
+    padding: 11px 14px;
+    border-radius: 10px;
+    border: 1px dashed rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    font-size: 0.83rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .file-label:hover { border-color: rgba(46,204,113,0.5); color: #2ecc71; }
+  #json-input { display: none; }
+  .divider { height: 1px; background: rgba(255,255,255,0.06); }
+  .location-info {
+    font-size: 0.72rem;
+    color: rgba(255,255,255,0.3);
+    text-align: center;
+  }
+  #weather-api-key-row { display: none; flex-direction: column; gap: 8px; }
+  #weather-api-key-row.visible { display: flex; }
+  .weather-service-tag {
+    font-size: 0.65rem;
+    padding: 2px 7px;
+    border-radius: 20px;
+    background: rgba(46,204,113,0.15);
+    color: rgba(46,204,113,0.8);
+    letter-spacing: 0.08em;
+    display: inline-block;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ─── LOCATION BADGE ─────────────────────────────────────────── */
+
+  /* ─── LOADING ─────────────────────────────────────────────────── */
+  #loading {
+    position: fixed; inset: 0;
+    background: #0a0a2e;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    transition: opacity 0.8s ease;
+  }
+  #loading.hide { opacity: 0; pointer-events: none; }
+  .load-text {
+    font-family: 'Amiri', serif;
+    font-size: 2rem;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 0.05em;
+  }
+  .load-sub {
+    font-size: 0.75rem;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .loader-ring {
+    width: 44px; height: 44px;
+    border: 2px solid rgba(46,204,113,0.15);
+    border-top-color: rgba(255,215,0,0.7);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ─── RESPONSIVE LANDSCAPE ───────────────────────────────────── */
+  @media (orientation: landscape) and (max-height: 500px) {
+    #clock { font-size: clamp(2.5rem, 8vw, 4rem); }
+    .prayer-name-ar { font-size: clamp(1.2rem, 3vw, 1.6rem); }
+    .prayer-time { font-size: clamp(1rem, 2.5vw, 1.4rem); }
+    #sun { width: 38px; height: 38px; }
+  }
+
+  /* ─── DEBUG TOGGLE ───────────────────────────────────────────── */
+  .debug-toggle-label {
+    position: relative;
+    display: inline-block;
+    width: 44px; height: 24px;
+    flex-shrink: 0;
+  }
+  .debug-toggle-label input { display: none; }
+  .debug-toggle-track {
+    position: absolute; inset: 0;
+    background: rgba(255,255,255,0.1);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.15);
+    cursor: pointer;
+    transition: background 0.25s;
+  }
+  .debug-toggle-track::after {
+    content: '';
+    position: absolute;
+    width: 18px; height: 18px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 50%;
+    top: 2px; left: 2px;
+    transition: transform 0.25s, background 0.25s;
+  }
+  .debug-toggle-label input:checked + .debug-toggle-track {
+    background: rgba(255,180,50,0.3);
+    border-color: rgba(255,180,50,0.5);
+  }
+  .debug-toggle-label input:checked + .debug-toggle-track::after {
+    transform: translateX(20px);
+    background: rgba(255,180,50,0.9);
+  }
+</style>
+</head>
+<body>
+
+<!-- Loading -->
+<div id="loading">
+  <div class="load-text">مواقيت الصلاة</div>
+  <div class="load-sub">Prayer Times</div>
+  <div class="loader-ring"></div>
+</div>
+
+<!-- App -->
+<div id="app">
+
+  <!-- Sky section (3/4) -->
+  <div id="sky-section">
+    <div id="sky-bg"></div>
+    <!-- CSS beam: pure radial gradient, smooth degradé -->
+    <div id="sun-halo"></div>
+
+    <!-- Clouds -->
+
+    <!-- Moon -->
+    <div id="sun-track" style="position:absolute;bottom:0;left:0;right:0;width:100%;height:0;pointer-events:none;">
+      <div id="moon"></div>
+    </div>
+    <!-- Landscape SVG -->
+
+    <!-- Time display (centered overlay) -->
+    <div id="time-display">
+      <div id="clock">00:00</div>
+      <div id="date-display">--</div>
+    </div>
+
+    <!-- Location badge -->
+    <!-- Top bar: weather + settings -->
+    <div id="top-bar">
+      <div id="top-bar-left">
+        <span id="top-bar-icon">🌤</span>
+        <span id="top-bar-city">PARIS</span>
+        <span id="top-bar-temp">--°</span>
+        <span id="top-bar-desc">--</span>
+        <span id="top-bar-wind"></span>
+      </div>
+      <div id="top-bar-right">
+        <button id="settings-btn" onclick="toggleSettings()">⚙</button>
+      </div>
+    </div>
+
+    <!-- Settings panel — plein écran -->
+    <div id="settings-panel">
+      <div id="settings-header">
+        <span id="settings-title-main">Paramètres</span>
+        <button id="settings-close" onclick="toggleSettings()">✕</button>
+      </div>
+      <div id="settings-body">
+
+        <!-- Localisation -->
+        <div class="setting-section">
+          <div class="setting-title">Localisation</div>
+          <div class="setting-row">
+            <input type="text" class="settings-input" id="city-input" placeholder="Paris, Lyon, Alger...">
+            <div class="settings-btn-row">
+              <button class="s-btn primary" onclick="searchCity()">Rechercher</button>
+              <button class="s-btn" onclick="useGeoloc()">📍 GPS</button>
+            </div>
+            <div class="location-info" id="coord-info">--</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Méthode de calcul -->
+        <div class="setting-section">
+          <div class="setting-title">Méthode de calcul des heures</div>
+          <select class="method-select" id="method-select">
+            <option value="MWL">Muslim World League</option>
+            <option value="ISNA">ISNA — Amérique du Nord</option>
+            <option value="Egypt">Égypte</option>
+            <option value="Makkah">Oum al-Qura — Makkah</option>
+            <option value="Karachi">Université de Karachi</option>
+            <option value="Tehran">Téhéran</option>
+            <option value="UOIF" selected>UOIF — France</option>
+          </select>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Météo -->
+        <div class="setting-section">
+          <div class="setting-title">Service météo <span class="weather-service-tag" id="weather-status">désactivé</span></div>
+          <select class="weather-service-select" id="weather-service" onchange="onWeatherServiceChange()">
+            <option value="none">— Désactivé —</option>
+            <option value="openmeteo">Open-Meteo (gratuit, sans clé)</option>
+            <option value="openweathermap">OpenWeatherMap (clé API gratuite)</option>
+            <option value="weatherapi">WeatherAPI.com (clé API gratuite)</option>
+            <option value="accuweather">AccuWeather (clé API)</option>
+            <option value="meteofrance">Météo France API (token requis)</option>
+          </select>
+          <div id="weather-api-key-row">
+            <input type="text" class="settings-input" id="weather-api-key" placeholder="Coller votre clé API ici...">
+            <button class="s-btn primary" onclick="saveWeatherKey()">Enregistrer</button>
+            <div class="location-info" id="weather-key-hint">—</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Athan -->
+        <div class="setting-section">
+          <div class="setting-title">Athan</div>
+          <button class="s-btn primary" onclick="triggerAdhan('fajr'); toggleSettings();">▶ Tester l'athan</button>
+          <div class="location-info">Fichier attendu : <code style="color:rgba(46,204,113,0.6)">adhan.mp3</code> à la racine du projet</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Debug -->
+        <div class="setting-section">
+          <div class="setting-title">Mode débogage</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <label class="debug-toggle-label">
+              <input type="checkbox" id="debug-toggle" onchange="toggleDebug(this.checked)" checked>
+              <span class="debug-toggle-track"></span>
+            </label>
+            <span style="font-size:0.82rem;color:rgba(255,255,255,0.55);" id="debug-label">
+              Actif — double-clic sur une prière pour simuler l'heure
+            </span>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:6px;">
+            <button class="s-btn" onclick="state.fakeMinutes=null;tick();" style="flex:1">
+              ↺ Heure réelle
+            </button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- JSON -->
+        <div class="setting-section">
+          <div class="setting-title">Importer horaires personnalisés (JSON)</div>
+          <label class="file-label" for="json-input">📂 Charger mon fichier d'horaires</label>
+          <input type="file" id="json-input" accept=".json" onchange="loadJSON(event)">
+          <div class="location-info" id="json-loaded-info">Aucun fichier chargé</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Next prayer banner -->
+  <div id="next-prayer-info">Prochaine prière : --</div>
+
+  <!-- Prayer times bar (1/4) -->
+  <div id="prayer-section">
+    <!-- Populated by JS -->
+  </div>
+
+</div>
+
+<script>
+// ─── PRAYER TIME CALCULATION ─────────────────────────────────────
+const METHODS = {
+  MWL:     { fajr: 18, isha: 17 },
+  ISNA:    { fajr: 15, isha: 15 },
+  Egypt:   { fajr: 19.5, isha: 17.5 },
+  Makkah:  { fajr: 18.5, isha: 90 /* min after maghrib */ },
+  Karachi: { fajr: 18, isha: 18 },
+  Tehran:  { fajr: 17.7, isha: 14 },
+  UOIF:    { fajr: 12, isha: 12 },
+};
+
+function toRad(d) { return d * Math.PI / 180; }
+function toDeg(r) { return r * 180 / Math.PI; }
+function fixAngle(a) { return a - 360 * Math.floor(a / 360); }
+function fixHour(a) { return a - 24 * Math.floor(a / 24); }
+
+function sunPosition(jd) {
+  const D = jd - 2451545.0;
+  const g = fixAngle(357.529 + 0.98560028 * D);
+  const q = fixAngle(280.459 + 0.98564736 * D);
+  const L = fixAngle(q + 1.915 * Math.sin(toRad(g)) + 0.020 * Math.sin(toRad(2*g)));
+  const e = 23.439 - 0.00000036 * D;
+  const RA = toDeg(Math.atan2(Math.cos(toRad(e)) * Math.sin(toRad(L)), Math.cos(toRad(L)))) / 15;
+  const dec = toDeg(Math.asin(Math.sin(toRad(e)) * Math.sin(toRad(L))));
+  const EqT = q/15 - fixHour(RA);
+  return { dec, EqT };
+}
+
+function julianDate(year, month, day) {
+  if (month <= 2) { year -= 1; month += 12; }
+  const A = Math.floor(year/100);
+  const B = 2 - A + Math.floor(A/4);
+  return Math.floor(365.25*(year+4716)) + Math.floor(30.6001*(month+1)) + day + B - 1524.5;
+}
+
+function computePrayerTimes(lat, lng, date, method = 'UOIF') {
+  const m = METHODS[method] || METHODS.UOIF;
+  const y = date.getFullYear(), mo = date.getMonth()+1, d = date.getDate();
+  const jd = julianDate(y, mo, d) - lng / (15*24);
+  const { dec, EqT } = sunPosition(jd);
+
+  const transit = 12 - EqT - lng/15;
+
+  function hourAngle(angle) {
+    const num = -Math.sin(toRad(angle)) - Math.sin(toRad(lat)) * Math.sin(toRad(dec));
+    const den = Math.cos(toRad(lat)) * Math.cos(toRad(dec));
+    if (Math.abs(num/den) > 1) return null;
+    return toDeg(Math.acos(num/den)) / 15;
+  }
+
+  // Asr (Shafi: shadow ratio 1; Hanafi: 2)
+  function asrAngle(factor) {
+    return -toDeg(Math.atan(1/(factor + Math.tan(toRad(Math.abs(lat - dec))))));
+  }
+
+  const sunriseHA = hourAngle(0.833);
+  const fajrHA = hourAngle(m.fajr);
+  const ishaHA = typeof m.isha === 'number' && m.isha < 24 ? hourAngle(m.isha) : null;
+  const asrHA = hourAngle(asrAngle(1));
+
+  const sunrise = sunriseHA !== null ? fixHour(transit - sunriseHA) : null;
+  const sunset = sunriseHA !== null ? fixHour(transit + sunriseHA) : null;
+  const fajr = fajrHA !== null ? fixHour(transit - fajrHA) : null;
+  const dhuhr = fixHour(transit + 0.017); // just after zenith
+  const asr = asrHA !== null ? fixHour(transit + asrHA) : null;
+  const maghrib = sunset;
+  let isha;
+  if (typeof m.isha === 'number' && m.isha >= 24) {
+    // minutes after maghrib
+    isha = maghrib !== null ? fixHour(maghrib + m.isha/60) : null;
+  } else {
+    isha = ishaHA !== null ? fixHour(transit + ishaHA) : null;
+  }
+
+  function fmt(h) {
+    if (h === null) return '--:--';
+    const tz = -date.getTimezoneOffset() / 60;
+    h = fixHour(h + tz);
+    const hh = Math.floor(h);
+    const mm = Math.round((h - hh) * 60);
+    return `${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}`;
+  }
+  function toMins(h) {
+    if (h === null) return null;
+    const tz = -date.getTimezoneOffset() / 60;
+    h = fixHour(h + tz);
+    return Math.floor(h)*60 + Math.round((h - Math.floor(h))*60);
+  }
+
+  return {
+    fajr: { label: 'الفجر', fr: 'Fajr', time: fmt(fajr), mins: toMins(fajr) },
+    dhuhr: { label: 'الظهر', fr: 'Dhuhr', time: fmt(dhuhr), mins: toMins(dhuhr) },
+    asr: { label: 'العصر', fr: 'Asr', time: fmt(asr), mins: toMins(asr) },
+    maghrib: { label: 'المغرب', fr: 'Maghrib', time: fmt(maghrib), mins: toMins(maghrib) },
+    isha: { label: 'العشاء', fr: 'Isha', time: fmt(isha), mins: toMins(isha) },
+    _raw: {
+      sunrise: sunrise, sunset: sunset,
+      sunriseMins: toMins(sunrise), sunsetMins: toMins(sunset)
+    }
+  };
+}
+
+// ─── SKY THEME ENGINE ─────────────────────────────────────────────
+const SKY_STATES = [
+  // [minuteStart, minuteEnd, skyTop, skyBot, horizonColor, horizonOpacity, starsOpacity, cloudOpacity, sunGlow]
+  { name:'night',   top:'#03030f', bot:'#07091a', h:'transparent', ho:0, stars:1, clouds:0, glow:'rgba(100,100,200,0.0)' },
+  { name:'fajr',    top:'#0e0520', bot:'#2d0b55', h:'rgba(120,40,180,0.6)', ho:0.7, stars:0.6, clouds:0, glow:'rgba(180,100,255,0.5)' },
+  { name:'sunrise', top:'#1a1060', bot:'#4a1a00', h:'rgba(255,100,30,0.9)', ho:1, stars:0.1, clouds:0.3, glow:'rgba(255,140,50,0.8)' },
+  { name:'morning', top:'#1a6fa8', bot:'#7ab8e0', h:'rgba(200,230,255,0.2)', ho:0.3, stars:0, clouds:0.5, glow:'rgba(200,230,255,0.3)' },
+  { name:'dhuhr',   top:'#0e5fa0', bot:'#5aaddf', h:'rgba(180,220,255,0.1)', ho:0.2, stars:0, clouds:0.6, glow:'rgba(180,220,255,0.2)' },
+  { name:'asr',     top:'#1060a0', bot:'#7bbde8', h:'rgba(240,200,100,0.25)', ho:0.4, stars:0, clouds:0.5, glow:'rgba(240,190,80,0.4)' },
+  { name:'maghrib', top:'#1a0a00', bot:'#6b2000', h:'rgba(255,80,0,1)', ho:1, stars:0.2, clouds:0.2, glow:'rgba(255,100,0,0.9)' },
+  { name:'dusk',    top:'#0a0520', bot:'#200a40', h:'rgba(200,60,30,0.5)', ho:0.6, stars:0.7, clouds:0, glow:'rgba(200,60,60,0.4)' },
+];
+
+function lerp(a, b, t) { return a + (b-a)*t; }
+function lerpColor(c1, c2, t) {
+  // c1, c2 are hex or rgba strings — we'll just use CSS mix
+  return null;
+}
+
+function hexToRgb(hex) {
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? [parseInt(r[1],16), parseInt(r[2],16), parseInt(r[3],16)] : [0,0,0];
+}
+
+function blendHex(h1, h2, t) {
+  const a = hexToRgb(h1), b = hexToRgb(h2);
+  const r = [0,1,2].map(i => Math.round(lerp(a[i],b[i],t)));
+  return `rgb(${r[0]},${r[1]},${r[2]})`;
+}
+
+// ─── APP STATE ────────────────────────────────────────────────────
+let state = {
+  lat: 48.8566, lng: 2.3522,
+  cityName: 'Paris',
+  method: 'UOIF',
+  prayers: null,
+  customJSON: null,
+  debug: true,        // debug ON par défaut
+  fakeMinutes: null,  // null = heure réelle
+};
+
+
+// ─── UPDATE SKY ───────────────────────────────────────────────────
+function getSkyStateForTime(nowMins, prayers) {
+  if (!prayers) return SKY_STATES[0];
+  const p = prayers;
+  const { fajr, dhuhr, asr, maghrib, isha } = p;
+  const { sunriseMins, sunsetMins } = p._raw;
+
+  const f = fajr.mins, sr = sunriseMins, d = dhuhr.mins;
+  const a = asr.mins, ss = sunsetMins || maghrib.mins, mg = maghrib.mins, is = isha.mins;
+
+  // Transition windows (mins)
+  const W = 25;
+
+  function t(from, to) {
+    if (nowMins < from) return 0;
+    if (nowMins > to) return 1;
+    return (nowMins - from) / (to - from);
+  }
+
+  // Night → Fajr
+  if (nowMins < f - W) return { ...SKY_STATES[0], blend: null };
+  if (nowMins < f + W) {
+    const pct = t(f - W, f + W);
+    return blend(SKY_STATES[0], SKY_STATES[1], pct);
+  }
+  // Fajr → Sunrise
+  if (nowMins < sr - W) return { ...SKY_STATES[1] };
+  if (nowMins < sr + W) {
+    const pct = t(sr - W, sr + W);
+    return blend(SKY_STATES[1], SKY_STATES[2], pct);
+  }
+  // Sunrise → Morning
+  if (nowMins < sr + 60) {
+    const pct = t(sr + W, sr + 60);
+    return blend(SKY_STATES[2], SKY_STATES[3], pct);
+  }
+  // Morning → Dhuhr
+  if (nowMins < d + W) return { ...SKY_STATES[3] };
+  if (nowMins < d + W*2) {
+    const pct = t(d, d + W*2);
+    return blend(SKY_STATES[3], SKY_STATES[4], pct);
+  }
+  // Dhuhr → Asr
+  if (nowMins < a - W) return { ...SKY_STATES[4] };
+  if (nowMins < a + W) {
+    const pct = t(a - W, a + W);
+    return blend(SKY_STATES[4], SKY_STATES[5], pct);
+  }
+  // Asr → Maghrib
+  if (nowMins < ss - W) return { ...SKY_STATES[5] };
+  if (nowMins < ss + W) {
+    const pct = t(ss - W, ss + W);
+    return blend(SKY_STATES[5], SKY_STATES[6], pct);
+  }
+  // Maghrib → Dusk
+  if (nowMins < mg + 30) {
+    const pct = t(ss + W, mg + 30);
+    return blend(SKY_STATES[6], SKY_STATES[7], pct);
+  }
+  // Dusk → Night
+  if (nowMins < is - W) return { ...SKY_STATES[7] };
+  if (nowMins < is + W) {
+    const pct = t(is - W, is + W);
+    return blend(SKY_STATES[7], SKY_STATES[0], pct);
+  }
+  return { ...SKY_STATES[0] };
+}
+
+function blend(s1, s2, t) {
+  return {
+    top: blendHex(s1.top, s2.top, t),
+    bot: blendHex(s1.bot, s2.bot, t),
+    h: s2.h,
+    ho: lerp(s1.ho, s2.ho, t),
+    stars: lerp(s1.stars, s2.stars, t),
+    clouds: lerp(s1.clouds, s2.clouds, t),
+    glow: s2.glow,
+  };
+}
+
+function applySkyState(sky) {
+  const bg = document.getElementById("sky-bg");
+  bg.style.background = `linear-gradient(to bottom, ${sky.top} 0%, ${sky.bot} 100%)`;
+}
+
+
+// ─── SUNDIAL SHADOW ───────────────────────────────────────────────
+
+
+
+
+function updateSunPosition(nowMins, prayers) {
+  if (!prayers) return;
+  const { sunriseMins, sunsetMins } = prayers._raw;
+  const ss = sunsetMins || prayers.maghrib.mins;
+  const sr = sunriseMins;
+  const halo = document.getElementById('sun-halo');
+  const moon = document.getElementById('moon');
+  const W = window.innerWidth;
+
+  // ── DAY ──
+  if (nowMins >= sr && nowMins <= ss) {
+    const progress = (nowMins - sr) / (ss - sr);
+    const pct = (progress * 100).toFixed(1) + '%';
+    const arc = Math.sin(progress * Math.PI); // 0→1→0 peak at noon
+
+    // Color temperature: warm orange at horizon, pale gold/white at noon
+    const isSunrise = progress < 0.18;
+    const isSunset  = progress > 0.82;
+    const isHorizon = isSunrise || isSunset;
+
+    // Halo color
+    const r0 = isHorizon ? 255 : 255;
+    const g0 = isHorizon ? Math.round(160 + arc * 70) : Math.round(230 + arc * 25);
+    const b0 = isHorizon ? Math.round(40  + arc * 80) : Math.round(120 + arc * 135);
+    const a0 = (0.55 + arc * 0.3).toFixed(2);
+
+    const r1 = isHorizon ? 255 : 255;
+    const g1 = isHorizon ? Math.round(100 + arc * 60) : Math.round(200 + arc * 40);
+    const b1 = isHorizon ? 0 : Math.round(60 + arc * 100);
+    const a1 = (0.18 + arc * 0.14).toFixed(2);
+
+    // Halo positioned horizontally at sun progress, vertically at 75% (3/4 from top)
+    halo.style.background = [
+      `radial-gradient(ellipse 70% 55% at ${pct} 75%,`,
+      `  rgba(${r0},${g0},${b0},${a0}) 0%,`,
+      `  rgba(${r1},${g1},${b1},${a1}) 30%,`,
+      `  transparent 70%)`
+    ].join(' ');
+    halo.style.opacity = '1';
+
+    if (moon) moon.style.opacity = '0';
+
+  // ── NIGHT: moon arc ──
+  } else {
+    if (halo) halo.style.opacity = '0';
+    if (!moon) return;
+    moon.style.opacity = '1';
+    const nightLen = 24*60 - (ss - sr);
+    let progress = nowMins > ss
+      ? (nowMins - ss) / nightLen
+      : (nowMins + 24*60 - ss) / nightLen;
+    const skyH = document.getElementById('sky-section').offsetHeight;
+    const x = progress * W;
+    const arcHeight = skyH * 0.65;
+    const y = -arcHeight * 4 * Math.min(progress,1) * (1 - Math.min(progress,1));
+    moon.style.left = x + 'px';
+    moon.style.top  = y + 'px';
+  }
+}
+
+// ─── CLOCK + MAIN LOOP ────────────────────────────────────────────
+const NAMES_FR = { fajr:'Fajr', dhuhr:'Dhuhr', asr:'Asr', maghrib:'Maghrib', isha:'Isha' };
+const NAMES_AR = { fajr:'الفجر', dhuhr:'الظهر', asr:'العصر', maghrib:'المغرب', isha:'العشاء' };
+
+function renderPrayerBar(prayers, nowMins) {
+  const section = document.getElementById('prayer-section');
+  section.innerHTML = '';
+  const keys = ['fajr','dhuhr','asr','maghrib','isha'];
+
+  let nextKey = null, minDiff = Infinity;
+  keys.forEach(k => {
+    const m = prayers[k].mins;
+    if (m !== null && m > nowMins && m - nowMins < minDiff) {
+      minDiff = m - nowMins;
+      nextKey = k;
+    }
+  });
+
+  // Active = last prayer whose time has passed
+  // Highlight next prayer, grey out past ones
+  keys.forEach(k => {
+    const p = prayers[k];
+    const div = document.createElement("div");
+    div.className = "prayer-item";
+    const isPast = p.mins !== null && p.mins < nowMins;
+    const isNext = k === nextKey;
+    if (isNext) div.classList.add("active");
+    else if (isPast) div.classList.add("past");
+
+    div.innerHTML = `
+      <div class="prayer-time">${p.time}</div>
+      <div class="prayer-name-ar">${NAMES_AR[k]}</div>
+      <div class="prayer-name-fr">${NAMES_FR[k]}</div>
+    `;
+    // Debug: double-click sets fake time to 1 min before this prayer
+    if (state.debug && p.mins !== null) {
+      div.title = 'Double-clic : simuler cette heure';
+      div.style.cursor = 'pointer';
+      div.addEventListener('dblclick', () => {
+        state.fakeMinutes = p.mins - 1;
+        tick();
+      });
+    }
+    section.appendChild(div);
+  });
+
+  // Next prayer info
+  if (nextKey) {
+    const diff = prayers[nextKey].mins - nowMins;
+    const h = Math.floor(diff/60), m = diff%60;
+    const label = h > 0 ? `${h}h ${m}min` : `${m} min`;
+    document.getElementById('next-prayer-info').textContent =
+      `${NAMES_AR[nextKey]} dans ${label}`;
+  } else {
+    document.getElementById('next-prayer-info').textContent = 'Fajr demain';
+  }
+}
+
+function tick() {
+  const now = new Date();
+
+  // ── Debug : heure fake ou réelle ──
+  const nowMins = state.debug && state.fakeMinutes !== null
+    ? state.fakeMinutes
+    : now.getHours() * 60 + now.getMinutes();
+
+  const displayH = String(Math.floor(nowMins / 60) % 24).padStart(2,'0');
+  const displayM = String(nowMins % 60).padStart(2,'0');
+  const clockEl = document.getElementById('clock');
+  clockEl.textContent = `${displayH}:${displayM}`;
+  // Debug indicator on clock
+  if (state.debug && state.fakeMinutes !== null) {
+    clockEl.style.color = 'rgba(255,180,50,0.9)';
+  } else {
+    clockEl.style.color = '';
+  }
+
+  const days = ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const months = ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  document.getElementById('date-display').textContent =
+    `${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+
+  if (state.prayers) {
+    const sky = getSkyStateForTime(nowMins, state.prayers);
+    applySkyState(sky);
+    updateSunPosition(nowMins, state.prayers);
+    renderPrayerBar(state.prayers, nowMins);
+    if (!state.fakeMinutes) checkAdhan(nowMins, state.prayers);
+  }
+}
+
+
+// ─── WEATHER ─────────────────────────────────────────────────────
+const WMO_ICONS = {
+  0:'☀️', 1:'🌤', 2:'⛅', 3:'☁️',
+  45:'🌫', 48:'🌫',
+  51:'🌦', 53:'🌦', 55:'🌧',
+  61:'🌧', 63:'🌧', 65:'🌧',
+  71:'🌨', 73:'🌨', 75:'❄️',
+  80:'🌦', 81:'🌧', 82:'⛈',
+  95:'⛈', 96:'⛈', 99:'⛈',
+};
+const WMO_DESC = {
+  0:'Ciel dégagé', 1:'Peu nuageux', 2:'Partiellement nuageux', 3:'Couvert',
+  45:'Brouillard', 48:'Brouillard givrant',
+  51:'Bruine légère', 53:'Bruine', 55:'Bruine forte',
+  61:'Pluie légère', 63:'Pluie', 65:'Pluie forte',
+  71:'Neige légère', 73:'Neige', 75:'Neige forte',
+  80:'Averses', 81:'Averses', 82:'Fortes averses',
+  95:'Orage', 96:'Orage grêle', 99:'Orage fort',
+};
+
+
+// ─── DATA LOADING ─────────────────────────────────────────────────
+function calcAndRender() {
+  if (state.customJSON) {
+    // Use custom JSON
+    state.prayers = parseCustomJSON(state.customJSON);
+  } else {
+    state.prayers = computePrayerTimes(state.lat, state.lng, new Date(), state.method);
+  }
+  document.getElementById('coord-info').textContent =
+    `${state.lat.toFixed(4)}°N  ${state.lng.toFixed(4)}°E`;
+  fetchWeatherWithService(state.lat, state.lng, state.cityName);
+  tick();
+}
+
+function parseCustomJSON(json) {
+  /*
+   * Formats supportés :
+   * 1. Plat     { fajr:"06:32", dhuhr:"12:51", asr:"15:08", maghrib:"17:14", isha:"19:14" }
+   * 2. Tableau  [{ date:"2025-01-01", fajr:"06:32", ... }, ...]
+   * 3. Annuel   { "2025": { "1": { "1": { fajr:..., ... }, "2": {...} }, "2": {...} } }
+   * 4. Mois/jour sans année { "1": { "1": { fajr:..., ... } } }
+   */
+  const now   = new Date();
+  const y     = String(now.getFullYear());
+  const m     = String(now.getMonth() + 1);
+  const d     = String(now.getDate());
+
+  function timeToMins(t) {
+    if (!t || t === '--:--') return null;
+    const [h, mm] = t.split(':').map(Number);
+    return isNaN(h) ? null : h * 60 + mm;
+  }
+
+  function build(obj) {
+    const keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const result = {};
+    keys.forEach(k => {
+      const t = obj[k] || obj[k.charAt(0).toUpperCase() + k.slice(1)] || '--:--';
+      result[k] = { label: NAMES_AR[k], fr: NAMES_FR[k], time: t, mins: timeToMins(t) };
+    });
+    const sr = result.fajr.mins   ? result.fajr.mins + 70   : 420;
+    const ss = result.maghrib.mins ? result.maghrib.mins - 5 : 1170;
+    result._raw = { sunriseMins: sr, sunsetMins: ss };
+    return result;
+  }
+
+  // Format 3 : année > mois > jour
+  if (json[y]?.[m]?.[d])   return build(json[y][m][d]);
+
+  // Format 3 sans year key (mois > jour)
+  if (!json[y] && json[m]?.[d]) return build(json[m][d]);
+
+  // Format 2 : tableau de dates
+  if (Array.isArray(json)) {
+    const today = now.toISOString().slice(0, 10);
+    const found = json.find(e => e.date === today) || json[0];
+    return build(found);
+  }
+
+  // Format 1 : objet plat
+  return build(json);
+}
+
+// ─── GEOLOCATION ──────────────────────────────────────────────────
+function useGeoloc() {
+  if (!navigator.geolocation) { alert('Géolocalisation non supportée'); return; }
+  navigator.geolocation.getCurrentPosition(async pos => {
+    state.lat = pos.coords.latitude;
+    state.lng = pos.coords.longitude;
+    state.customJSON = null;
+    // Reverse geocode (nominatim)
+    try {
+      const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.lat}&lon=${state.lng}&format=json`);
+      const d = await r.json();
+      state.cityName = d.address.city || d.address.town || d.address.village || 'Ma position';
+    } catch { state.cityName = 'Ma position'; }
+    calcAndRender();
+    toggleSettings();
+  }, () => alert('Impossible d\'obtenir la position'));
+}
+
+async function searchCity() {
+  const q = document.getElementById('city-input').value.trim();
+  if (!q) return;
+  try {
+    const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`);
+    const d = await r.json();
+    if (!d.length) { alert('Ville non trouvée'); return; }
+    state.lat = parseFloat(d[0].lat);
+    state.lng = parseFloat(d[0].lon);
+    state.cityName = d[0].display_name.split(',')[0];
+    state.customJSON = null;
+    calcAndRender();
+    toggleSettings();
+  } catch { alert('Erreur de recherche'); }
+}
+
+function loadJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const parsed = JSON.parse(e.target.result);
+      state.customJSON = parsed;
+      // Detect covered years
+      const years = Object.keys(parsed).filter(k => /^20\d{2}$/.test(k));
+      const label = years.length
+        ? `Horaires ${years.join('–')}`
+        : (file.name.replace('.json',''));
+      state.cityName = parsed.ville
+        ? `${parsed.ville} (${parsed.methode || 'personnalisé'})`
+        : label;
+      // Persist in localStorage
+      try {
+        localStorage.setItem('customJSON', e.target.result);
+        localStorage.setItem('customJSONName', file.name);
+      } catch(ex) {}
+      updateJSONInfo();
+      calcAndRender();
+      toggleSettings();
+    } catch { alert('JSON invalide — vérifiez le format'); }
+  };
+  reader.readAsText(file);
+}
+
+function clearJSON() {
+  state.customJSON = null;
+  state.cityName = state.geoCity || 'Paris';
+  localStorage.removeItem('customJSON');
+  localStorage.removeItem('customJSONName');
+  updateJSONInfo();
+  calcAndRender();
+}
+
+function updateJSONInfo() {
+  const el = document.getElementById('json-loaded-info');
+  const btn = document.getElementById('json-clear-btn');
+  if (!el) return;
+  if (state.customJSON) {
+    const now = new Date();
+    const day = now.getDate(), mon = now.getMonth()+1, yr = now.getFullYear();
+    const dayData = state.customJSON[yr]?.[mon]?.[day];
+    const status = dayData
+      ? `✓ ${day}/${mon}/${yr} : ${dayData.fajr} → ${dayData.isha}`
+      : '✓ Fichier chargé (jour non trouvé → calcul auto)';
+    el.textContent = status;
+    el.style.color = 'rgba(46,204,113,0.8)';
+    if (btn) btn.style.display = 'block';
+  } else {
+    el.textContent = 'Aucun fichier — calcul automatique actif';
+    el.style.color = 'rgba(255,255,255,0.3)';
+    if (btn) btn.style.display = 'none';
+  }
+}
+
+document.getElementById('method-select').addEventListener('change', e => {
+  state.method = e.target.value;
+  if (!state.customJSON) calcAndRender();
+});
+
+function toggleDebug(on) {
+  state.debug = on;
+  if (!on) state.fakeMinutes = null;
+  const lbl = document.getElementById('debug-label');
+  if (lbl) lbl.textContent = on
+    ? 'Actif — double-clic sur une prière pour simuler l\u2019heure'
+    : 'Désactivé';
+  tick();
+}
+
+function toggleSettings() {
+  document.getElementById('settings-panel').classList.toggle('open');
+  if (document.getElementById('settings-panel').classList.contains('open')) {
+    initWeatherSelector();
+    updateJSONInfo();
+    const dbgCb = document.getElementById('debug-toggle');
+    if (dbgCb) dbgCb.checked = state.debug;
+  }
+}
+
+// ─── WEATHER SERVICE SELECTION ──────────────────────────────────
+const WEATHER_HINTS = {
+  openmeteo:      'Aucune clé requise — fonctionne directement',
+  openweathermap: 'Inscription gratuite sur openweathermap.org → "API Keys"',
+  weatherapi:     'Inscription gratuite sur weatherapi.com → Dashboard',
+  accuweather:    'Inscription sur developer.accuweather.com',
+  meteofrance:    'Inscription sur portail-api.meteofrance.fr',
+};
+const WEATHER_NEEDS_KEY = ['openweathermap','weatherapi','accuweather','meteofrance'];
+
+let weatherState = {
+  service: localStorage.getItem('weather_service') || 'none',
+  apiKey:  localStorage.getItem('weather_key') || '',
+};
+
+function onWeatherServiceChange() {
+  const sel = document.getElementById('weather-service').value;
+  const keyRow = document.getElementById('weather-api-key-row');
+  const hint = document.getElementById('weather-key-hint');
+  if (WEATHER_NEEDS_KEY.includes(sel)) {
+    keyRow.classList.add('visible');
+    hint.textContent = WEATHER_HINTS[sel] || '';
+    document.getElementById('weather-api-key').value = sel === weatherState.service ? weatherState.apiKey : '';
+  } else {
+    keyRow.classList.remove('visible');
+  }
+  if (sel === 'none') {
+    document.getElementById('weather-status').textContent = 'désactivé';
+  }
+}
+
+function saveWeatherKey() {
+  const sel = document.getElementById('weather-service').value;
+  const key = document.getElementById('weather-api-key').value.trim();
+  if (!key) { alert('Clé vide'); return; }
+  weatherState.service = sel;
+  weatherState.apiKey  = key;
+  localStorage.setItem('weather_service', sel);
+  localStorage.setItem('weather_key', key);
+  document.getElementById('weather-status').textContent = 'actif';
+  fetchWeatherWithService(state.lat, state.lng, state.cityName);
+  toggleSettings();
+}
+
+function fetchWeatherWithService(lat, lng, cityName) {
+  const svc = weatherState.service;
+  const key = weatherState.apiKey;
+  if (svc === 'none') return;
+  if (svc === 'openmeteo') {
+    fetchOpenMeteo(lat, lng, cityName);
+  } else if (svc === 'openweathermap' && key) {
+    fetchOWM(lat, lng, cityName, key);
+  } else if (svc === 'weatherapi' && key) {
+    fetchWeatherAPI(lat, lng, cityName, key);
+  }
+  // AccuWeather / MétéoFrance need location lookup first — show placeholder
+}
+
+function setWeatherBar(icon, temp, desc, wind, city) {
+  document.getElementById('top-bar-icon').textContent  = icon;
+  document.getElementById('top-bar-temp').textContent  = temp;
+  document.getElementById('top-bar-desc').textContent  = desc;
+  document.getElementById('top-bar-wind').textContent  = wind ? ` · ${wind} km/h` : '';
+  if (city) document.getElementById('top-bar-city').textContent = city.toUpperCase();
+}
+
+// ── Open-Meteo (JSONP-style via dynamic import — needs HTTP server) ──
+async function fetchOpenMeteo(lat, lng, cityName) {
+  try {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current=temperature_2m,weather_code,windspeed_10m&temperature_unit=celsius&timezone=auto`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const c = d.current;
+    const code = c.weather_code ?? c.weathercode ?? 0;
+    const icon = WMO_ICONS[code] || '🌡';
+    setWeatherBar(icon, `${Math.round(c.temperature_2m)}°`, WMO_DESC[code] || '', Math.round(c.windspeed_10m), cityName);
+    document.getElementById('weather-status').textContent = 'actif';
+  } catch(e) { console.warn('Open-Meteo:', e.message); }
+}
+
+// ── OpenWeatherMap ──
+async function fetchOWM(lat, lng, cityName, key) {
+  try {
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${key}&units=metric&lang=fr`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const icon = d.weather[0].id <= 232 ? '⛈' : d.weather[0].id <= 531 ? '🌧' : d.weather[0].id <= 622 ? '❄️' : d.weather[0].id <= 781 ? '🌫' : d.weather[0].id === 800 ? '☀️' : d.weather[0].id <= 804 ? '⛅' : '🌡';
+    setWeatherBar(icon, `${Math.round(d.main.temp)}°`, d.weather[0].description, Math.round(d.wind.speed * 3.6), cityName);
+    document.getElementById('weather-status').textContent = 'actif';
+  } catch(e) { console.warn('OWM:', e.message); }
+}
+
+// ── WeatherAPI.com ──
+async function fetchWeatherAPI(lat, lng, cityName, key) {
+  try {
+    const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${lat},${lng}&lang=fr`;
+    const r = await fetch(url);
+    const d = await r.json();
+    const c = d.current;
+    const icon = c.condition.code <= 1000 ? '☀️' : c.condition.code <= 1006 ? '⛅' : c.condition.code <= 1030 ? '🌫' : c.is_day ? '🌦' : '🌧';
+    setWeatherBar(icon, `${Math.round(c.temp_c)}°`, c.condition.text, Math.round(c.wind_kph), cityName);
+    document.getElementById('weather-status').textContent = 'actif';
+  } catch(e) { console.warn('WeatherAPI:', e.message); }
+}
+
+// Init weather service selector on open
+function initWeatherSelector() {
+  const sel = document.getElementById('weather-service');
+  if (sel) {
+    sel.value = weatherState.service || 'none';
+    onWeatherServiceChange();
+    if (weatherState.service !== 'none') {
+      document.getElementById('weather-status').textContent = 'actif';
+    }
+  }
+}
+
+// ─── ADHAN AUDIO ─────────────────────────────────────────────────
+const adhan = new Audio('./adhan.mp3');
+adhan.preload = 'auto';
+
+// Track which prayers have already been played today
+const playedPrayers = new Set();
+let lastCheckedDate = new Date().toDateString();
+
+function checkAdhan(nowMins, prayers) {
+  // Reset played set at midnight
+  const today = new Date().toDateString();
+  if (today !== lastCheckedDate) {
+    playedPrayers.clear();
+    lastCheckedDate = today;
+  }
+
+  const keys = ['fajr','dhuhr','asr','maghrib','isha'];
+  const now = new Date();
+  const nowSecs = now.getSeconds();
+
+  keys.forEach(k => {
+    const p = prayers[k];
+    if (p.mins === null) return;
+    const key = `${today}-${k}`;
+    // Trigger within the first 30 seconds of the prayer minute
+    if (p.mins === nowMins && nowSecs < 30 && !playedPrayers.has(key)) {
+      playedPrayers.add(key);
+      triggerAdhan(k);
+    }
+  });
+}
+
+function triggerAdhan(prayerKey) {
+  adhan.currentTime = 0;
+  adhan.play().catch(() => {
+    // Autoplay blocked — show a visual alert instead
+    showAdhanAlert(prayerKey);
+  });
+  showAdhanAlert(prayerKey);
+}
+
+function showAdhanAlert(prayerKey) {
+  // Remove existing alert if any
+  const existing = document.getElementById('adhan-alert');
+  if (existing) existing.remove();
+
+  const div = document.createElement('div');
+  div.id = 'adhan-alert';
+  div.style.cssText = `
+    position: fixed;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    z-index: 50;
+    background: rgba(10,8,30,0.92);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgba(46,204,113,0.35);
+    border-radius: 24px;
+    padding: 32px 48px;
+    text-align: center;
+    animation: adhanReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards;
+    box-shadow: 0 0 80px rgba(255,180,0,0.15), 0 0 0 1px rgba(255,215,0,0.1);
+  `;
+
+  div.innerHTML = `
+    <style>
+      @keyframes adhanReveal {
+        to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        from { opacity: 0; }
+      }
+      @keyframes adhanGlow {
+        0%, 100% { text-shadow: 0 0 20px rgba(46,204,113,0.4); }
+        50% { text-shadow: 0 0 50px rgba(255,215,0,0.9), 0 0 100px rgba(255,180,0,0.4); }
+      }
+    </style>
+    <div style="font-family:'Amiri',serif; font-size:2.8rem; color:#2ecc71; animation: adhanGlow 2s ease-in-out infinite; margin-bottom:8px;">
+      ${NAMES_AR[prayerKey]}
+    </div>
+    <div style="font-size:0.9rem; color:rgba(255,255,255,0.5); letter-spacing:0.2em; text-transform:uppercase; margin-bottom:6px;">
+      ${NAMES_FR[prayerKey]}
+    </div>
+    <div style="font-family:'Amiri',serif; font-size:1.1rem; color:rgba(46,204,113,0.6); margin: 16px 0;">
+      الله أكبر الله أكبر
+    </div>
+    <button onclick="adhan.pause(); this.closest('#adhan-alert').remove();"
+      style="
+        margin-top:12px;
+        padding: 8px 24px;
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.07);
+        color: rgba(255,255,255,0.6);
+        cursor: pointer;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.78rem;
+        letter-spacing: 0.1em;
+      ">
+      ✕ Fermer
+    </button>
+  `;
+
+  document.body.appendChild(div);
+
+  // Auto-dismiss after adhan ends or after 10 minutes
+  adhan.onended = () => {
+    setTimeout(() => div.remove(), 3000);
+  };
+  setTimeout(() => { if (div.parentNode) div.remove(); }, 10 * 60 * 1000);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', () => {
+  // Restore JSON from localStorage
+  try {
+    const saved = localStorage.getItem('customJSON');
+    if (saved) {
+      state.customJSON = JSON.parse(saved);
+      const parsed = state.customJSON;
+      const years = Object.keys(parsed).filter(k => /^20\d{2}$/.test(k));
+      state.cityName = parsed.ville
+        ? `${parsed.ville} (${parsed.methode || 'personnalisé'})`
+        : (years.length ? `Horaires ${years.join('–')}` : 'Horaires JSON');
+      state.geoCity = state.cityName;
+    }
+  } catch(ex) {}
+  calcAndRender();
+  setInterval(tick, 1000);
+
+  // Remove loading screen
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hide');
+    setTimeout(() => document.getElementById('loading').remove(), 800);
+  }, 800);
+
+  function useParisDefault() {
+    state.lat = 48.8566;
+    state.lng = 2.3522;
+    state.cityName = 'Paris';
+    calcAndRender();
+  }
+
+  // Try geoloc automatically on first load, fallback to Paris
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async pos => {
+      state.lat = pos.coords.latitude;
+      state.lng = pos.coords.longitude;
+      try {
+        const r = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${state.lat}&lon=${state.lng}&format=json`);
+        const d = await r.json();
+        state.cityName = d.address.city || d.address.town || d.address.village || 'Ma position';
+      } catch { state.cityName = 'Ma position'; }
+      calcAndRender();
+    }, () => useParisDefault(), { timeout: 6000 });
+  } else {
+    useParisDefault();
+  }
+});
+
+// PWA Service Worker (inline)
+if ('serviceWorker' in navigator) {
+  // VERSION change this string with each deploy to force cache refresh on all devices
+  const CACHE_VERSION = 'salat-v1';
+  const swCode = `
+    const CACHE = '${CACHE_VERSION}';
+    const ASSETS = ['./', './adhan.mp3'];
+
+    // Install: cache assets
+    self.addEventListener('install', e => {
+      e.waitUntil(
+        caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {}))
+      );
+      self.skipWaiting();
+    });
+
+    // Activate: delete old caches automatically
+    self.addEventListener('activate', e => {
+      e.waitUntil(
+        caches.keys().then(keys =>
+          Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+        )
+      );
+      clients.claim();
+    });
+
+    // Fetch: network first, fallback to cache
+    self.addEventListener('fetch', e => {
+      e.respondWith(
+        fetch(e.request)
+          .then(res => {
+            const clone = res.clone();
+            caches.open(CACHE).then(c => c.put(e.request, clone));
+            return res;
+          })
+          .catch(() => caches.match(e.request))
+      );
+    });
+  `;
+  const blob = new Blob([swCode], { type: 'text/javascript' });
+  const swUrl = URL.createObjectURL(blob);
+  navigator.serviceWorker.register(swUrl);
+}
+</script>
+
+<!-- PWA Manifest inline -->
+<script>
+const manifest = {
+  name: 'مواقيت الصلاة',
+  short_name: 'Salat',
+  start_url: '.',
+  display: 'fullscreen',
+  background_color: '#0a0a2e',
+  theme_color: '#0a0a2e',
+  orientation: 'any',
+  icons: []
+};
+const mBlob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+const mLink = document.createElement('link');
+mLink.rel = 'manifest';
+mLink.href = URL.createObjectURL(mBlob);
+document.head.appendChild(mLink);
+</script>
+
+</body>
+</html>

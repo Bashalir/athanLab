@@ -1,0 +1,203 @@
+/* ═══════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — AthanLab Theming System
+   Un token par concept visuel. Les thèmes surchargen uniquement ces
+   variables ; global.css n'utilise que var(--c-*) / var(--f-*).
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── THÈME PAR DÉFAUT : Night (Navy Classique) ─────────────────── */
+:root,
+[data-theme="night"] {
+  /* ── Fond ───────────────────────────────────────────────────── */
+  --c-bg:            #030308;           /* Fond le plus profond        */
+  --c-surface:       rgba(5,5,8,0.96);  /* Prayer bar / basse section  */
+  --c-panel:         rgba(4,5,18,0.97); /* Settings panel              */
+  --c-topbar:        rgba(0,0,0,0.18);  /* Top bar glassmorphism       */
+  --c-glass:         rgba(0,0,0,0.82);  /* Banner / adhan overlay      */
+  --c-loading:       #0a0a2e;           /* Loading screen              */
+
+  /* ── Accent ─────────────────────────────────────────────────── */
+  --c-accent:        #2ecc71;
+  --c-accent-rgb:    46, 204, 113;
+  --c-accent-dim:    rgba(46,204,113,0.12);
+  --c-accent-border: rgba(46,204,113,0.35);
+
+  /* ── Or / Ornemental ────────────────────────────────────────── */
+  --c-gold:          #ffd700;
+  --c-gold-rgb:      255, 215, 0;
+  --c-gold-dim:      rgba(255,215,0,0.15);
+
+  /* ── Texte ──────────────────────────────────────────────────── */
+  --c-text-hi:       rgba(255,255,255,0.92);
+  --c-text-mid:      rgba(255,255,255,0.55);
+  --c-text-lo:       rgba(255,255,255,0.30);
+  --c-text-accent:   #2ecc71;
+
+  /* ── Bordures ───────────────────────────────────────────────── */
+  --c-border:        rgba(255,255,255,0.06);
+  --c-border-hi:     rgba(255,255,255,0.10);
+  --c-border-accent: rgba(46,204,113,0.25);
+
+  /* ── Piliers de l'arche ─────────────────────────────────────── */
+  --c-pillar:        #020205;
+  --c-pillar-hi:     #1a1a2e;
+
+  /* ── Gradient de l'heure de prière active ───────────────────── */
+  --c-prayer-gradient: linear-gradient(135deg, #a8ff78 0%, #2ecc71 50%, #1a9e5c 100%);
+
+  /* ── Typographie ────────────────────────────────────────────── */
+  --f-body:          'Outfit', sans-serif;
+  --f-arabic:        'Amiri', serif;
+
+  /* ── Ornements (opacité des patterns islamiques) ────────────── */
+  --opacity-pattern: 0.04;
+  --opacity-ornament: 0.06;
+  --opacity-spandrel: 0.15;
+}
+
+/* ── THÈME : Dhahab (Or sur Noir) ──────────────────────────────── */
+[data-theme="gold"] {
+  --c-bg:            #04030a;
+  --c-surface:       rgba(8,6,15,0.98);
+  --c-panel:         rgba(5,4,12,0.98);
+  --c-topbar:        rgba(0,0,0,0.28);
+  --c-glass:         rgba(5,4,12,0.92);
+  --c-loading:       #04030a;
+
+  --c-accent:        #cba455;
+  --c-accent-rgb:    203, 164, 85;
+  --c-accent-dim:    rgba(203,164,85,0.12);
+  --c-accent-border: rgba(203,164,85,0.35);
+
+  --c-gold:          #f5d080;
+  --c-gold-rgb:      245, 208, 128;
+  --c-gold-dim:      rgba(245,208,128,0.12);
+
+  --c-text-hi:       rgba(255,248,230,0.95);
+  --c-text-mid:      rgba(255,248,230,0.55);
+  --c-text-lo:       rgba(255,248,230,0.30);
+  --c-text-accent:   #cba455;
+
+  --c-border:        rgba(203,164,85,0.08);
+  --c-border-hi:     rgba(203,164,85,0.16);
+  --c-border-accent: rgba(203,164,85,0.30);
+
+  --c-pillar:        #06040e;
+  --c-pillar-hi:     #12101e;
+
+  --c-prayer-gradient: linear-gradient(135deg, #f5d080 0%, #cba455 50%, #8a6e35 100%);
+
+  --opacity-pattern: 0.05;
+  --opacity-ornament: 0.08;
+  --opacity-spandrel: 0.20;
+}
+
+/* ── THÈME : Fajr (Aube — Violet vers Ambre) ───────────────────── */
+[data-theme="dawn"] {
+  --c-bg:            #120820;
+  --c-surface:       rgba(20,10,30,0.97);
+  --c-panel:         rgba(15,8,25,0.98);
+  --c-topbar:        rgba(0,0,0,0.22);
+  --c-glass:         rgba(12,6,20,0.92);
+  --c-loading:       #120820;
+
+  --c-accent:        #ff9f43;
+  --c-accent-rgb:    255, 159, 67;
+  --c-accent-dim:    rgba(255,159,67,0.12);
+  --c-accent-border: rgba(255,159,67,0.35);
+
+  --c-gold:          #ffcc44;
+  --c-gold-rgb:      255, 204, 68;
+  --c-gold-dim:      rgba(255,204,68,0.12);
+
+  --c-text-hi:       rgba(255,245,235,0.92);
+  --c-text-mid:      rgba(255,245,235,0.55);
+  --c-text-lo:       rgba(255,245,235,0.30);
+  --c-text-accent:   #ff9f43;
+
+  --c-border:        rgba(255,159,67,0.08);
+  --c-border-hi:     rgba(255,159,67,0.16);
+  --c-border-accent: rgba(255,159,67,0.30);
+
+  --c-pillar:        #0d0518;
+  --c-pillar-hi:     #1e1030;
+
+  --c-prayer-gradient: linear-gradient(135deg, #ffcc44 0%, #ff9f43 50%, #e05a1a 100%);
+
+  --opacity-pattern: 0.04;
+  --opacity-ornament: 0.07;
+  --opacity-spandrel: 0.18;
+}
+
+/* ── THÈME : Zamrud (Émeraude intense sur Noir) ─────────────────── */
+[data-theme="emerald"] {
+  --c-bg:            #020806;
+  --c-surface:       rgba(3,12,8,0.97);
+  --c-panel:         rgba(2,8,5,0.98);
+  --c-topbar:        rgba(0,0,0,0.24);
+  --c-glass:         rgba(2,8,5,0.92);
+  --c-loading:       #020806;
+
+  --c-accent:        #00e676;
+  --c-accent-rgb:    0, 230, 118;
+  --c-accent-dim:    rgba(0,230,118,0.10);
+  --c-accent-border: rgba(0,230,118,0.35);
+
+  --c-gold:          #80ffb4;
+  --c-gold-rgb:      128, 255, 180;
+  --c-gold-dim:      rgba(128,255,180,0.10);
+
+  --c-text-hi:       rgba(235,255,245,0.92);
+  --c-text-mid:      rgba(235,255,245,0.55);
+  --c-text-lo:       rgba(235,255,245,0.30);
+  --c-text-accent:   #00e676;
+
+  --c-border:        rgba(0,230,118,0.07);
+  --c-border-hi:     rgba(0,230,118,0.14);
+  --c-border-accent: rgba(0,230,118,0.30);
+
+  --c-pillar:        #010604;
+  --c-pillar-hi:     #071208;
+
+  --c-prayer-gradient: linear-gradient(135deg, #80ffb4 0%, #00e676 50%, #00c853 100%);
+
+  --opacity-pattern: 0.04;
+  --opacity-ornament: 0.06;
+  --opacity-spandrel: 0.15;
+}
+
+/* ── THÈME : Raqq (Monochrome — Élégance B&W) ──────────────────── */
+[data-theme="mono"] {
+  --c-bg:            #080808;
+  --c-surface:       rgba(12,12,12,0.97);
+  --c-panel:         rgba(8,8,8,0.98);
+  --c-topbar:        rgba(0,0,0,0.35);
+  --c-glass:         rgba(8,8,8,0.93);
+  --c-loading:       #080808;
+
+  --c-accent:        #e8e8e8;
+  --c-accent-rgb:    232, 232, 232;
+  --c-accent-dim:    rgba(232,232,232,0.08);
+  --c-accent-border: rgba(232,232,232,0.25);
+
+  --c-gold:          #ffffff;
+  --c-gold-rgb:      255, 255, 255;
+  --c-gold-dim:      rgba(255,255,255,0.08);
+
+  --c-text-hi:       rgba(255,255,255,0.92);
+  --c-text-mid:      rgba(255,255,255,0.48);
+  --c-text-lo:       rgba(255,255,255,0.26);
+  --c-text-accent:   #e8e8e8;
+
+  --c-border:        rgba(255,255,255,0.07);
+  --c-border-hi:     rgba(255,255,255,0.13);
+  --c-border-accent: rgba(255,255,255,0.22);
+
+  --c-pillar:        #050505;
+  --c-pillar-hi:     #111111;
+
+  --c-prayer-gradient: linear-gradient(135deg, #ffffff 0%, #c8c8c8 50%, #909090 100%);
+
+  --opacity-pattern: 0.03;
+  --opacity-ornament: 0.05;
+  --opacity-spandrel: 0.12;
+}

@@ -1,0 +1,840 @@
+/* ─── RESET ───────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── BASE ────────────────────────────────────────────────────────── */
+html, body, #root {
+  width: 100%; height: 100%;
+  overflow: hidden;
+  font-family: var(--f-body);
+}
+
+/* ─── LAYOUT ──────────────────────────────────────────────────────── */
+#app {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── SKY SECTION ─────────────────────────────────────────────────── */
+.sky-section {
+  flex: 3;
+  position: relative;
+  overflow: hidden;
+  transition: background 3s ease;
+}
+
+.sky-bg {
+  position: absolute; inset: 0;
+  transition: background 8s ease;
+}
+
+/* ─── SCREEN FRAME (MANUSCRIPT STYLE) ─────────────────────────────── */
+.screen-frame {
+  position: absolute;
+  inset: 12px;
+  pointer-events: none;
+  z-index: 40;
+  border: 1px solid var(--c-border-hi);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.05);
+}
+.screen-frame::before, .screen-frame::after {
+  content: ''; position: absolute; width: 20px; height: 20px;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.3);
+  transition: all 1s ease;
+}
+.screen-frame::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+.screen-frame::after  { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+
+/* ─── ISLAMIC PATTERN ─────────────────────────────────────────────── */
+.islamic-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: var(--opacity-pattern);
+  pointer-events: none;
+  background-size: 50px 50px;
+  animation: patternMove 120s linear infinite;
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 60%, #ffffff 61%, #ffffff 63%, transparent 64%),
+    linear-gradient(45deg, transparent 48%, #ffffff 49%, transparent 51%),
+    linear-gradient(-45deg, transparent 48%, #ffffff 49%, transparent 51%);
+}
+
+@keyframes patternMove {
+  from { background-position: 0 0; }
+  to   { background-position: 50px 50px; }
+}
+
+/* ─── MOSQUE ARCH ARCHITECTURE ────────────────────────────────────── */
+.mosque-arch-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* ─── PILIERS (MARBRE SOMBRE & OR) ────────────────────────────────── */
+.arch-pillar {
+  position: absolute;
+  top: 60px; bottom: 0;
+  width: 50px;
+  background: linear-gradient(to right, var(--c-pillar), var(--c-pillar-hi), var(--c-pillar));
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+  z-index: 2;
+}
+.arch-pillar::after {
+  content: ''; position: absolute; inset: 0;
+  background-image:
+    repeating-linear-gradient(90deg, transparent 0px, transparent 4px, rgba(255,255,255,0.03) 5px, transparent 6px);
+  opacity: 0.5;
+}
+.arch-pillar.left { left: 0; border-right: 1px solid rgba(var(--c-gold-rgb), 0.15); }
+.arch-pillar.right { right: 0; border-left: 1px solid rgba(var(--c-gold-rgb), 0.15); }
+
+/* Chapiteaux (Haut des colonnes) */
+.arch-capital {
+  position: absolute; top: 0; width: 60px; height: 60px;
+  background: linear-gradient(to bottom, var(--c-pillar), var(--c-pillar-hi));
+  border-bottom: 2px solid rgba(var(--c-gold-rgb), 0.3);
+  z-index: 3;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+.arch-capital.left {
+  left: 0;
+  border-radius: 0 0 20px 0;
+  border-right: 1px solid rgba(var(--c-gold-rgb), 0.2);
+}
+.arch-capital.right {
+  right: 0;
+  border-radius: 0 0 0 20px;
+  border-left: 1px solid rgba(var(--c-gold-rgb), 0.2);
+}
+
+/* Bases (Bas des colonnes) */
+.arch-base {
+  position: absolute; bottom: 0; width: 56px; height: 20px;
+  background: linear-gradient(to top, var(--c-pillar), var(--c-pillar-hi));
+  border-top: 1px solid var(--c-border-hi);
+  z-index: 3;
+}
+.arch-base.left { left: 0; border-radius: 0 8px 0 0; }
+.arch-base.right { right: 0; border-radius: 8px 0 0 0; }
+
+/* ─── ÉCOINÇONS (SPANDRELS - DÉTAIL ISLAMIQUE) ────────────────────── */
+.arch-spandrel-left, .arch-spandrel-right {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 55%;
+  background: var(--c-pillar);
+  z-index: 1;
+}
+
+/* Motif Girih Vectoriel (Complexe) */
+.arch-spandrel-left::after, .arch-spandrel-right::after {
+  content: ''; position: absolute; inset: 0;
+  opacity: var(--opacity-spandrel);
+  background-image:
+    radial-gradient(circle at 50% 50%, transparent 20%, var(--c-accent) 21%, var(--c-accent) 23%, transparent 24%),
+    linear-gradient(45deg, transparent 48%, var(--c-accent) 49%, transparent 51%),
+    linear-gradient(-45deg, transparent 48%, var(--c-accent) 49%, transparent 51%);
+  background-size: 30px 30px;
+  mask-image: radial-gradient(circle, black 40%, transparent 100%);
+}
+
+.arch-spandrel-left {
+  left: 0;
+  mask-image: radial-gradient(ellipse at 100% 100%, transparent 68%, black 69%);
+  -webkit-mask-image: radial-gradient(ellipse at 100% 100%, transparent 68%, black 69%);
+  border-right: 1px solid rgba(var(--c-gold-rgb), 0.1);
+}
+
+.arch-spandrel-right {
+  right: 0;
+  mask-image: radial-gradient(ellipse at 0% 100%, transparent 68%, black 69%);
+  -webkit-mask-image: radial-gradient(ellipse at 0% 100%, transparent 68%, black 69%);
+  border-left: 1px solid rgba(var(--c-gold-rgb), 0.1);
+}
+
+/* ─── LIGNE D'ARCHE (GOLDEN RIM) ──────────────────────────────────── */
+.arch-border {
+  position: absolute;
+  top: 0; left: 50px; right: 50px; bottom: 0;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.5);
+  outline: 1px solid var(--c-border-hi);
+  outline-offset: 4px;
+  border-bottom: none;
+  border-radius: 50% 50% 0 0 / 30% 30% 0 0;
+  box-shadow:
+    inset 0 10px 80px rgba(0,0,0,0.8),
+    0 0 20px rgba(var(--c-gold-rgb), 0.1);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Clé de voûte (Keystone) - Diamant */
+.arch-keystone {
+  position: absolute;
+  top: 12%; left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 24px; height: 24px;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.6);
+  background: radial-gradient(circle, rgba(var(--c-gold-rgb), 0.2), #000);
+  box-shadow: 0 0 25px rgba(var(--c-gold-rgb), 0.3);
+  z-index: 5;
+}
+
+/* ─── FANOOS (LANTERNS) ───────────────────────────────────────────── */
+.fanoos {
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 200px;
+  transform-origin: top center;
+  z-index: 10;
+  display: flex; flex-direction: column; align-items: center;
+}
+.fanoos.left { left: 90px; animation: swing 6s ease-in-out infinite alternate; }
+.fanoos.right { right: 90px; animation: swing 7s ease-in-out infinite alternate-reverse; }
+
+.fanoos-chain {
+  width: 1px;
+  height: 100px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.1), rgba(var(--c-gold-rgb), 0.5));
+}
+
+.fanoos-body {
+  width: 28px; height: 45px;
+  position: relative;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(var(--c-gold-rgb), 0.05));
+  border: 1px solid rgba(var(--c-gold-rgb), 0.3);
+  border-radius: 8px 8px 16px 16px;
+  backdrop-filter: blur(2px);
+  box-shadow:
+    inset 0 0 10px rgba(255,200,50,0.05),
+    0 10px 20px rgba(0,0,0,0.3);
+}
+
+/* Chapeau de la lanterne (Top Cap) */
+.fanoos-body::before {
+  content: ''; position: absolute; top: -6px; left: 2px; right: 2px; height: 6px;
+  background: #1a1a1a;
+  border: 1px solid rgba(var(--c-gold-rgb), 0.4);
+  border-radius: 4px 4px 0 0;
+}
+
+/* Pointe de la lanterne (Bottom Tip) */
+.fanoos-body::after {
+  content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+  width: 6px; height: 6px;
+  background: rgba(var(--c-gold-rgb), 0.6);
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(var(--c-gold-rgb), 0.4);
+}
+
+/* Flamme intérieure */
+.fanoos-body > .fanoos-light {
+  position: absolute; inset: 8px;
+  background: radial-gradient(circle, rgba(255,200,100,0.9), transparent 70%);
+  border-radius: 50%;
+  opacity: 0.6;
+  animation: flicker 4s infinite alternate;
+}
+
+@keyframes swing { from { transform: rotate(1.5deg); } to { transform: rotate(-1.5deg); } }
+@keyframes flicker { 0% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 0.8; transform: scale(1.05); } }
+
+/* ─── CENTRAL ORNAMENT ────────────────────────────────────────────── */
+.central-ornament {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100vmax;
+  height: 100vmax;
+  width: 80vmax;
+  height: 80vmax;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+  opacity: var(--opacity-ornament);
+  background-image:
+    repeating-conic-gradient(from 0deg, rgba(255,255,255,0.1) 0deg 2deg, transparent 2deg 15deg),
+    radial-gradient(circle, transparent 30%, rgba(255,255,255,0.1) 31%, transparent 32%);
+  mask-image: radial-gradient(circle, black 20%, transparent 65%);
+  -webkit-mask-image: radial-gradient(circle, black 20%, transparent 65%);
+    repeating-conic-gradient(from 0deg, transparent 0deg 10deg, rgba(255,255,255,0.05) 10deg 20deg),
+    radial-gradient(circle at 50% 50%, transparent 30%, rgba(255,255,255,0.05) 31%, transparent 32%);
+  mask-image: radial-gradient(circle, black 0%, transparent 70%);
+  -webkit-mask-image: radial-gradient(circle, black 0%, transparent 70%);
+  animation: slowSpin 180s linear infinite;
+}
+
+.sun-halo {
+  position: absolute; inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0;
+  transition: background 3s ease, opacity 4s ease;
+}
+
+@keyframes slowSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to   { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* ─── TOP BAR ─────────────────────────────────────────────────────── */
+.top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  z-index: 20;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px 0 16px;
+  background: var(--c-topbar);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--c-border);
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  color: var(--c-text-mid);
+  font-weight: 300;
+}
+.top-bar-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.top-bar-city {
+  color: rgba(255,255,255,0.7);
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+.top-bar-temp {
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+  font-weight: 300;
+}
+.top-bar-desc { color: rgba(255,255,255,0.38); }
+.top-bar-icon { font-size: 1rem; opacity: 0.8; }
+.top-bar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.top-bar-wind {
+  color: rgba(255,255,255,0.35);
+  font-size: 0.68rem;
+}
+
+/* ─── TIME DISPLAY ────────────────────────────────────────────────── */
+.time-display {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.clock {
+  font-family: var(--f-arabic);
+  font-weight: 400;
+  font-size: clamp(8rem, 28vw, 18rem);
+  color: var(--c-text-hi);
+  letter-spacing: 0.06em;
+  text-shadow: 0 4px 60px rgba(0,0,0,0.5), 0 0 120px rgba(0,0,0,0.25);
+  text-shadow:
+    0 2px 0px rgba(0,0,0,0.5),
+    0 0 30px rgba(255,200,50,0.1);
+  line-height: 1;
+  transition: color 0.3s;
+}
+
+.clock.debug { color: rgba(255,180,50,0.9); }
+
+/* Séparateur ornemental entre l'heure et la date */
+.time-divider {
+  width: 120px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  margin: 4px auto 12px;
+  position: relative;
+}
+.time-divider::after {
+  content: '◇';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(var(--c-gold-rgb), 0.6);
+  font-size: 12px;
+  background: transparent;
+  line-height: 1;
+}
+
+.date-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.date-gregorian {
+  font-size: clamp(1rem, 3vw, 1.6rem);
+  color: rgba(255,255,255,0.65);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 300;
+}
+
+.date-hijri {
+  font-family: var(--f-arabic);
+  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  color: var(--c-accent);
+  letter-spacing: 0.05em;
+  font-weight: 400;
+  opacity: 0.9;
+  text-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.3);
+}
+
+/* ─── NEXT PRAYER BANNER ─────────────────────────────────────────── */
+.next-prayer-banner {
+  width: 100%;
+  padding: 9px 24px;
+  font-size: clamp(0.85rem, 2.2vw, 1.1rem);
+  font-weight: 500;
+  color: rgba(255,255,255,0.85);
+  background: var(--c-surface);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid var(--c-border-accent);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  letter-spacing: 0.12em;
+  text-align: center;
+  text-transform: uppercase;
+  flex-shrink: 0;
+  z-index: 20;
+  position: relative;
+}
+
+/* ─── PRAYER SECTION ─────────────────────────────────────────────── */
+.prayer-section {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+  background: var(--c-surface);
+  backdrop-filter: blur(20px);
+  position: relative;
+  z-index: 10;
+}
+
+/* ─── PRAYER ITEM ────────────────────────────────────────────────── */
+.prayer-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 4px;
+  border-right: 1px solid var(--c-border);
+  border-top: 1px solid rgba(255,255,255,0.03);
+  border-radius: 0;
+  position: relative;
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: default;
+  overflow: hidden;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-position: center;
+}
+.prayer-item:last-child { border-right: none; }
+
+.prayer-item.active {
+  flex: 2.2;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(var(--c-accent-rgb), 0.15), transparent 70%),
+    linear-gradient(to bottom, rgba(5,5,8,0.5), rgba(5,5,8,0.9)),
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 10px);
+
+  border-radius: 0;
+  border-top: 1px solid rgba(var(--c-accent-rgb), 0.6);
+  border-left: 1px solid var(--c-border-hi);
+  border-right: 1px solid var(--c-border-hi);
+  box-shadow: 0 -10px 40px rgba(var(--c-accent-rgb), 0.1);
+}
+
+.prayer-item.active::before {
+  content: '';
+  position: absolute;
+  inset: 4px;
+  bottom: 0;
+  border-radius: 0;
+  border: 1px solid rgba(var(--c-accent-rgb), 0.2);
+  border-bottom: none;
+  pointer-events: none;
+}
+
+.prayer-item.past { opacity: 0.35; }
+
+.prayer-name-ar {
+  font-family: var(--f-arabic);
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  color: var(--c-text-hi);
+  font-weight: 700;
+  line-height: 1;
+  transition: font-size 0.4s ease;
+}
+.prayer-item.active .prayer-name-ar {
+  font-size: clamp(2.2rem, 6vw, 3.2rem);
+  color: var(--c-accent);
+}
+
+.prayer-name-fr {
+  font-size: clamp(0.7rem, 1.8vw, 1rem);
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 400;
+  transition: font-size 0.4s ease;
+}
+.prayer-item.active .prayer-name-fr {
+  font-size: clamp(0.9rem, 2vw, 1.2rem);
+  color: rgba(var(--c-accent-rgb), 0.5);
+}
+
+.prayer-time {
+  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  font-weight: 400;
+  color: var(--c-text-hi);
+  letter-spacing: 0.05em;
+  margin-top: 2px;
+  transition: font-size 0.4s ease;
+}
+.prayer-item.active .prayer-time {
+  font-size: clamp(2rem, 6vw, 3rem);
+  font-weight: 300;
+  background: var(--c-prayer-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.08em;
+}
+
+/* ─── SETTINGS BTN ────────────────────────────────────────────────── */
+.settings-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.2);
+  width: 28px; height: 28px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+  transition: color 0.3s, transform 0.4s;
+  padding: 0;
+}
+.settings-btn:hover { color: rgba(255,255,255,0.7); transform: rotate(60deg); }
+
+/* ─── SETTINGS PANEL ──────────────────────────────────────────────── */
+.settings-panel {
+  position: fixed; inset: 0;
+  z-index: 50;
+  background: var(--c-panel);
+  backdrop-filter: blur(24px);
+  display: none;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.settings-panel.open { display: flex; }
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 24px 16px;
+  border-bottom: 1px solid var(--c-border);
+  flex-shrink: 0;
+}
+.settings-title-main {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.8);
+}
+.settings-close {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--c-border-hi);
+  color: rgba(255,255,255,0.7);
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+}
+.settings-close:hover { background: rgba(255,255,255,0.12); color: white; }
+
+.settings-body {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  max-width: 520px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ─── SETTING SECTIONS ────────────────────────────────────────────── */
+.setting-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.setting-title {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+.setting-row { display: flex; flex-direction: column; gap: 8px; }
+
+.settings-input {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--c-border-hi);
+  color: white;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-family: var(--f-body);
+  outline: none;
+  width: 100%;
+}
+.settings-input:focus { border-color: rgba(var(--c-accent-rgb), 0.5); }
+
+.settings-btn-row { display: flex; gap: 8px; }
+
+.s-btn {
+  flex: 1;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--c-border-hi);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.75);
+  cursor: pointer;
+  font-size: 0.83rem;
+  font-family: var(--f-body);
+  transition: all 0.2s;
+  text-align: center;
+}
+.s-btn:hover { background: rgba(255,255,255,0.12); color: white; }
+.s-btn.primary {
+  background: var(--c-accent-dim);
+  border-color: var(--c-accent-border);
+  color: var(--c-accent);
+}
+.s-btn.primary:hover { background: rgba(var(--c-accent-rgb), 0.22); }
+
+.method-select, .weather-service-select {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--c-border-hi);
+  color: white;
+  padding: 11px 14px;
+  border-radius: 10px;
+  font-size: 0.88rem;
+  font-family: var(--f-body);
+  outline: none;
+  width: 100%;
+  cursor: pointer;
+}
+.method-select option,
+.weather-service-select option { background: #08091c; }
+
+.file-label {
+  display: block;
+  padding: 11px 14px;
+  border-radius: 10px;
+  border: 1px dashed rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.5);
+  font-size: 0.83rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.file-label:hover { border-color: rgba(var(--c-accent-rgb), 0.5); color: var(--c-accent); }
+
+.divider { height: 1px; background: var(--c-border); }
+
+.location-info {
+  font-size: 0.72rem;
+  color: var(--c-text-lo);
+  text-align: center;
+}
+
+.weather-service-tag {
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 20px;
+  background: var(--c-accent-dim);
+  color: rgba(var(--c-accent-rgb), 0.8);
+  letter-spacing: 0.08em;
+  display: inline-block;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ─── THEME SELECTOR ─────────────────────────────────────────────── */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 8px;
+}
+
+.theme-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 1px solid var(--c-border);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--f-body);
+}
+.theme-btn:hover {
+  border-color: var(--c-border-hi);
+  color: rgba(255,255,255,0.8);
+}
+.theme-btn.active {
+  border-color: var(--c-accent-border);
+  background: var(--c-accent-dim);
+  color: var(--c-accent);
+}
+
+.theme-swatch {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 8px rgba(0,0,0,0.4);
+}
+
+.theme-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.theme-desc {
+  font-size: 0.58rem;
+  opacity: 0.6;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* ─── LOADING ─────────────────────────────────────────────────────── */
+.loading-screen {
+  position: fixed; inset: 0;
+  background: var(--c-loading);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: opacity 0.8s ease;
+}
+.loading-screen.hide { opacity: 0; pointer-events: none; }
+
+.load-text {
+  font-family: var(--f-arabic);
+  font-size: 2rem;
+  color: rgba(255,255,255,0.8);
+  letter-spacing: 0.05em;
+}
+.load-sub {
+  font-size: 0.75rem;
+  color: var(--c-text-lo);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.loader-ring {
+  width: 44px; height: 44px;
+  border: 2px solid rgba(var(--c-accent-rgb), 0.15);
+  border-top-color: rgba(var(--c-gold-rgb), 0.7);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── MOON ────────────────────────────────────────────────────────── */
+.sun-track {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  width: 100%; height: 0;
+  pointer-events: none;
+}
+
+.sun-body {
+  position: absolute;
+  width: 64px; height: 64px;
+  background: radial-gradient(circle, #fff, #ffd700);
+  border-radius: 50%;
+  box-shadow: 
+    0 0 40px rgba(255, 215, 0, 0.6), 
+    0 0 80px rgba(255, 100, 50, 0.3);
+  opacity: 0;
+  transform: translate(-50%, 50%);
+  pointer-events: none;
+  z-index: 3; /* Derrière l'arche (z=4) mais devant le ciel */
+  transition: opacity 2s ease;
+}
+
+/* ─── DEBUG TOGGLE ────────────────────────────────────────────────── */
+.debug-toggle-label {
+  position: relative;
+  display: inline-block;
+  width: 44px; height: 24px;
+  flex-shrink: 0;
+}
+.debug-toggle-label input { display: none; }
+.debug-toggle-track {
+  position: absolute; inset: 0;
+  background: rgba(255,255,255,0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: background 0.25s;
+}
+.debug-toggle-track::after {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  background: rgba(255,255,255,0.6);
+  border-radius: 50%;
+  top: 2px; left: 2px;
+  transition: transform 0.25s, background 0.25s;
+}
+.debug-toggle-label input:checked + .debug-toggle-track {
+  background: rgba(255,180,50,0.3);
+  border-color: rgba(255,180,50,0.5);
+}
+.debug-toggle-label input:checked + .debug-toggle-track::after {
+  transform: translateX(20px);
+  background: rgba(255,180,50,0.9);
+}
+
+/* ─── RESPONSIVE LANDSCAPE ────────────────────────────────────────── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .clock { font-size: clamp(2.5rem, 8vw, 4rem); }
+  .prayer-name-ar { font-size: clamp(1.2rem, 3vw, 1.6rem); }
+  .prayer-time { font-size: clamp(1rem, 2.5vw, 1.4rem); }
+}
