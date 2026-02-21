@@ -39,26 +39,32 @@ export function SkySection({
   // Calcul du dégradé dynamique selon l'heure de la prière
   const getDynamicSkyGradient = () => {
     if (!prayers) return null;
-    const { fajrMins, sunriseMins, dhuhrMins, asrMins, maghribMins, ishaMins } = prayers._raw;
+    const { sunriseMins } = prayers._raw;
+    const fajrMins    = prayers.fajr.mins;
+    const dhuhrMins   = prayers.dhuhr.mins;
+    const asrMins     = prayers.asr.mins;
+    const maghribMins = prayers.maghrib.mins;
+    const ishaMins    = prayers.isha.mins;
     const t = nowMins;
 
     // Nuit (Avant Fajr)
     if (t < (fajrMins ?? 0)) return 'linear-gradient(to bottom, #020205, #080810)';
     
-    // Aube (Fajr -> Lever du soleil) : Violet mystique vers lueur dorée sombre
-    if (t < (sunriseMins ?? 0)) return 'linear-gradient(to bottom, #050510, #201525, #4a3040)';
+    // Aube (Fajr -> Lever du soleil) : Bleu nuit vers lueur rosée
+    if (t < (sunriseMins ?? 0)) return 'linear-gradient(to bottom, #1F1C2C, #5b4b68, #d48e94)';
     
-    // Matin (Lever -> Dhuhr) : Bleu profond vers turquoise éteint
-    if (t < (dhuhrMins ?? 0)) return 'linear-gradient(to bottom, #0a1525, #153045, #406070)';
+    // Matin (Lever -> Dhuhr) : Ciel bleu clair et lumineux (Daytime)
+    if (t < (dhuhrMins ?? 0)) return 'linear-gradient(to bottom, #2980B9, #6DD5FA, #ffffff)';
     
-    // Zénith (Dhuhr -> Asr) : Bleu "Islamic Turquoise" riche
-    if (t < (asrMins ?? 0)) return 'linear-gradient(to bottom, #102a45, #204a65, #307080)';
+    // Zénith (Dhuhr -> Asr) : Turquoise intense et vibrant (High Noon)
+    if (t < (asrMins ?? 0)) return 'linear-gradient(to bottom, #009FFF, #ec2F4B)'; /* Non, trop vif. */
+    if (t < (asrMins ?? 0)) return 'linear-gradient(to bottom, #36D1DC, #5B86E5)';
     
-    // Après-midi (Asr -> Maghrib) : Assombrissement vers l'ambre
-    if (t < (maghribMins ?? 0)) return 'linear-gradient(to bottom, #102035, #2a3a50, #7a5a4a)';
+    // Après-midi (Asr -> Maghrib) : Bleu profond vers Orange (Golden Hour)
+    if (t < (maghribMins ?? 0)) return 'linear-gradient(to bottom, #2b5876, #4e4376, #f3904f)';
     
-    // Crépuscule (Maghrib -> Isha) : Nuit tombante, rouge sombre et pourpre
-    if (t < (ishaMins ?? 0)) return 'linear-gradient(to bottom, #0a0a15, #251020, #5a2a2a)';
+    // Crépuscule (Maghrib -> Isha) : Violet sombre et nuit tombante (Dusk)
+    if (t < (ishaMins ?? 0)) return 'linear-gradient(to bottom, #0f0c29, #302b63, #24243e)';
     
     // Nuit (Après Isha)
     return 'linear-gradient(to bottom, #020205, #080810)';
@@ -182,18 +188,15 @@ export function SkySection({
       
       {/* Structure de la Porte de Mosquée */}
       <div className="mosque-arch-overlay">
-        <div className="arch-pillar left" />
-        <div className="arch-capital left" />
-        <div className="arch-base left" />
-        <div className="arch-pillar right" />
-        <div className="arch-capital right" />
-        <div className="arch-base right" />
-        <div className="arch-spandrel-left" />
-        <div className="arch-spandrel-right" />
-        <div className="arch-border" />
-        <div className="arch-keystone" />
-        <div className="fanoos left"><div className="fanoos-chain" /><div className="fanoos-body" /></div>
-        <div className="fanoos right"><div className="fanoos-chain" /><div className="fanoos-body" /></div>
+        {/* Rendu Vectoriel Intégré (SVG Inline) */}
+        <img
+          src="./ramadan.svg"
+          className="arch-image"
+          alt=""
+          onError={(e) => { e.currentTarget.style.display = 'none'; }}
+        />
+        <div className="fanoos left"><div className="fanoos-chain" /><div className="fanoos-body"><div className="fanoos-light" /></div></div>
+        <div className="fanoos right"><div className="fanoos-chain" /><div className="fanoos-body"><div className="fanoos-light" /></div></div>
       </div>
 
       <div className="central-ornament" />

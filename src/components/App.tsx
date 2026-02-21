@@ -58,9 +58,16 @@ export function App() {
   // Overlay actif tout le temps sauf ±15 min autour de chaque prière
   const nightDim = (() => {
     if (!state.prayers) return 0.65;
-    const { fajrMins, sunriseMins, dhuhrMins, asrMins, maghribMins, ishaMins } = state.prayers._raw;
+    const { sunriseMins } = state.prayers._raw;
     const WINDOW = 15;
-    const times = [fajrMins, sunriseMins, dhuhrMins, asrMins, maghribMins, ishaMins];
+    const times = [
+      state.prayers.fajr.mins,
+      sunriseMins,
+      state.prayers.dhuhr.mins,
+      state.prayers.asr.mins,
+      state.prayers.maghrib.mins,
+      state.prayers.isha.mins,
+    ];
     for (const t of times) {
       if (t !== null && t !== undefined && nowMins >= t - WINDOW && nowMins <= t + WINDOW) return 0;
     }

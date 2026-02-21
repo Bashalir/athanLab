@@ -1,4 +1,4 @@
-import type { PrayerTimes } from '../types';
+import type { PrayerTimes, PrayerKey } from '../types';
 import { NAMES_AR } from '../lib/prayerCalc';
 
 const KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export function NextPrayerBanner({ prayers, nowMins }: Props) {
-  let nextKey: string | null = null;
+  let nextKey: PrayerKey | null = null;
   let minDiff = Infinity;
   KEYS.forEach(k => {
     const m = prayers[k].mins;
