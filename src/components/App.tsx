@@ -55,10 +55,28 @@ export function App() {
     }
   }, [nowMins, state.prayers, state.fakeMinutes]);
 
+  // Dim overlay : 0 le jour, jusqu'à 0.55 la nuit (Isha → Fajr)
+  const nightDim = (() => {
+    if (!state.prayers) return 0;
+    const { ishaMins, fajrMins } = state.prayers._raw;
+    const isha  = ishaMins  ?? 0;
+    const fajr  = fajrMins  ?? 0;
+    if (nowMins >= isha || nowMins < fajr) return 0.55;
+    return 0;
+  })();
+
   return (
     <>
       <LoadingScreen />
       <div id="app">
+        {nightDim > 0 && (
+          <div style={{
+            position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none',
+            background: '#000',
+            opacity: nightDim,
+            transition: 'opacity 120s ease',
+          }} />
+        )}
         <SkySection
           skyState={skyState}
           prayers={state.prayers}
