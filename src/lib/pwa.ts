@@ -1,5 +1,6 @@
 // ─── PWA Service Worker (inline blob) ────────────────────────────
-const CACHE_VERSION = 'salat-v1';
+declare const __BUILD_ID__: string;
+const CACHE_VERSION = __BUILD_ID__;
 
 const SW_CODE = `
 const CACHE = '${CACHE_VERSION}';
