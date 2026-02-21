@@ -140,15 +140,7 @@ export function SkySection({
   }, [nowMins, prayers]);
 
   // Calcul de la date Hégirienne (approximative selon le calendrier local)
-  const hijriDate = new Intl.DateTimeFormat('fr-FR-u-ca-islamic', {
-    day: 'numeric', month: 'long', year: 'numeric'
-  }).format(new Date());
-
-  // Calcul du jour Hégirien pour la phase de la lune (1-30)
-  const hijriDayStr = new Intl.DateTimeFormat('en-u-ca-islamic', {
-    day: 'numeric'
-  }).format(new Date());
-  const hijriDay = parseInt(hijriDayStr, 10) || 15;
+  const { dateLabel: hijriDate, day: hijriDay } = getHijriInfo();
 
   // Génération du chemin SVG pour la phase de la lune
   const getMoonPath = (day: number) => {
@@ -190,9 +182,11 @@ export function SkySection({
       <div className="mosque-arch-overlay">
         {/* Rendu Vectoriel Intégré (SVG Inline) */}
         <img
-          src="./ramadan.svg"
+          src="/ramadan.svg"
           className="arch-image"
           alt=""
+          aria-hidden="true"
+          decoding="async"
           onError={(e) => { e.currentTarget.style.display = 'none'; }}
         />
         <div className="fanoos left"><div className="fanoos-chain" /><div className="fanoos-body"><div className="fanoos-light" /></div></div>
@@ -265,3 +259,28 @@ export function SkySection({
     </div>
   );
 }
+  const getHijriInfo = () => {
+    const now = new Date();
+    const fallbackDate = new Intl.DateTimeFormat('fr-FR', {
+      day: 'numeric', month: 'long', year: 'numeric',
+    }).format(now);
+
+    // iOS 9 can miss Intl calendar extensions. Keep rendering stable.
+    try {
+      const hijriDateFmt = new Intl.DateTimeFormat('fr-FR-u-ca-islamic', {
+        day: 'numeric', month: 'long', year: 'numeric',
+      });
+      const hijriDayFmt = new Intl.DateTimeFormat('en-u-ca-islamic', { day: 'numeric' });
+      const day = parseInt(hijriDayFmt.format(now), 10);
+      return {
+        dateLabel: hijriDateFmt.format(now),
+        day: Number.isFinite(day) ? day : 15,
+      };
+    } catch {
+      // Fallback for old Safari engines.
+      return {
+        dateLabel: fallbackDate,
+        day: now.getDate() || 15,
+      };
+    }
+  };
