@@ -2,6 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 import { execSync } from 'node:child_process';
+import postcssGlobalData from '@csstools/postcss-global-data';
+import postcssCustomProperties from 'postcss-custom-properties';
 
 function getBuildLabel() {
   let hash = 'dev';
@@ -28,6 +30,20 @@ export default defineConfig(({ command }) => ({
       renderModernChunks: false,
     }),
   ],
+  css: {
+    postcss: {
+      plugins: [
+        postcssGlobalData({
+          files: ['src/styles/tokens.css'],
+        }),
+        postcssCustomProperties({
+          // Keep CSS variables for modern browsers, but add static fallbacks
+          // for legacy Safari/iOS that do not support custom properties.
+          preserve: true,
+        }),
+      ],
+    },
+  },
   build: {
     minify: 'terser',
     rollupOptions: {

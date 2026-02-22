@@ -890,6 +890,89 @@ html.no-css-vars.ios-standalone .top-bar {
   background: rgba(255,180,50,0.9);
 }
 
+/* ─── LOGS MODAL ─────────────────────────────────────────────────── */
+.logs-modal-backdrop {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  z-index: 120;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px;
+}
+
+.logs-modal {
+  width: 100%;
+  max-width: 640px;
+  background: rgba(8,10,24,0.98);
+  border: 1px solid var(--c-border-hi);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+.logs-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--c-border);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.85rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.logs-modal-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: 1px solid var(--c-border-hi);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.75);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.logs-modal-text {
+  width: calc(100% - 24px);
+  margin: 12px;
+  min-height: 220px;
+  background: rgba(0,0,0,0.38);
+  border: 1px solid var(--c-border-hi);
+  border-radius: 8px;
+  color: rgba(255,255,255,0.88);
+  font-family: Menlo, Monaco, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.45;
+  padding: 10px;
+  resize: vertical;
+  -webkit-appearance: none;
+}
+
+.logs-modal-actions {
+  display: flex;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+
+html.no-css-vars .logs-modal {
+  background: rgba(8,10,24,0.98);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+html.no-css-vars .logs-modal-header {
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+html.no-css-vars .logs-modal-close,
+html.no-css-vars .logs-modal-text {
+  border: 1px solid rgba(255,255,255,0.14);
+}
+html.no-css-vars .logs-modal-text {
+  color: rgba(255,255,255,0.9);
+}
+
 /* ─── RESPONSIVE LANDSCAPE ────────────────────────────────────────── */
 @media (orientation: landscape) and (max-height: 500px) {
   .clock { font-size: 6rem; }

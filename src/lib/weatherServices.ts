@@ -1,4 +1,5 @@
 import type { WeatherConfig, WeatherData, WeatherService } from '../types';
+import { appendHealthLog } from './healthLog';
 
 // ─── WMO Weather Codes ────────────────────────────────────────────
 const WMO_ICONS: Record<number, string> = {
@@ -39,6 +40,7 @@ async function getJSON(url: string): Promise<any> {
       try {
         const xhr = new XMLHttpRequest();
         xhr.open('GET', url, true);
+        xhr.timeout = 8000;
         xhr.onreadystatechange = () => {
           if (xhr.readyState !== 4) return;
           if (xhr.status >= 200 && xhr.status < 300) {
@@ -52,6 +54,7 @@ async function getJSON(url: string): Promise<any> {
           reject(new Error(`HTTP ${xhr.status}`));
         };
         xhr.onerror = () => reject(new Error('Network error'));
+        xhr.ontimeout = () => reject(new Error('Timeout'));
         xhr.send();
       } catch (e) {
         reject(e);
@@ -115,7 +118,9 @@ export async function fetchWeather(
     if (service === 'openweathermap' && apiKey)     return await fetchOWM(lat, lng, apiKey);
     if (service === 'weatherapi' && apiKey)         return await fetchWeatherAPI(lat, lng, apiKey);
   } catch (e) {
-    console.warn(`Weather [${service}]:`, (e as Error).message);
+    const msg = (e as Error).message || 'unknown';
+    console.warn(`Weather [${service}]:`, msg);
+    appendHealthLog(`weather_error service=${service} msg=${msg}`);
   }
   return null;
 }

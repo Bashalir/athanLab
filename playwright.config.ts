@@ -33,5 +33,13 @@ export default defineConfig({
           'Mozilla/5.0 (iPad; CPU OS 9_3_5 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13G36 Safari/601.1',
       },
     },
+    {
+      name: 'webkit-safari-604-ua',
+      use: {
+        browserName: 'webkit',
+        viewport: { width: 768, height: 1024 },
+        userAgent: 'Mozilla/5.0 Safari/604.1',
+      },
+    },
   ],
 });

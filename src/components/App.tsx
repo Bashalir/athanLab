@@ -4,6 +4,7 @@ import { useClock }         from '../hooks/useClock';
 import { useWeather }       from '../hooks/useWeather';
 import { checkAdhan, setupAdhanAudioUnlock } from '../lib/adhan';
 import { registerServiceWorker } from '../lib/pwa';
+import { appendHealthLog } from '../lib/healthLog';
 import { LoadingScreen }    from './LoadingScreen';
 import { SkySection }       from './SkySection';
 import { NextPrayerBanner } from './NextPrayerBanner';
@@ -46,26 +47,13 @@ export function App() {
   const { nowMins, clockDisplay, dateDisplay, skyState, isDebugTime } = useClock(
     state.prayers, state.debug, state.fakeMinutes
   );
-  const weatherConfig = isLegacyIOS ? { service: 'none', apiKey: '' } : state.weatherConfig;
-  const weather = useWeather(state.lat, state.lng, weatherConfig);
-
-  const logHealth = (event: string) => {
-    try {
-      const key = 'app_health_log';
-      const existing = localStorage.getItem(key);
-      const list = existing ? JSON.parse(existing) as string[] : [];
-      list.push(`${new Date().toISOString()} ${event}`);
-      localStorage.setItem(key, JSON.stringify(list.slice(-40)));
-    } catch {
-      // Ignore logging failures on restricted browsers.
-    }
-  };
+  const weather = useWeather(state.lat, state.lng, state.weatherConfig);
 
   // PWA init (once)
   useEffect(() => {
     registerServiceWorker();
     setupAdhanAudioUnlock();
-    logHealth('startup');
+    appendHealthLog('startup');
   }, []);
 
   // Auto-update: poll latest index and reload when a new build is detected.
@@ -84,21 +72,13 @@ export function App() {
       const match = js.match(/salat-\d+/);
       if (!match) return;
       if (match[0] !== __BUILD_ID__) {
-        logHealth(`autoupdate_reload_${match[0]}`);
+        appendHealthLog(`autoupdate_reload_${match[0]}`);
         window.location.reload();
       }
     };
     const id = window.setInterval(check, 5 * 60 * 1000);
     return () => window.clearInterval(id);
   }, []);
-
-  // Force-stable defaults on iPad 2 / iOS 9 kiosk.
-  useEffect(() => {
-    if (!isLegacyIOS) return;
-    if (state.weatherConfig.service !== 'none') {
-      dispatch({ type: 'SET_WEATHER_CONFIG', config: { service: 'none', apiKey: '' } });
-    }
-  }, [isLegacyIOS, state.weatherConfig.service, dispatch]);
 
   // Watchdog: if app root becomes empty repeatedly, force a reload.
   useEffect(() => {
@@ -113,9 +93,9 @@ export function App() {
         return;
       }
       misses += 1;
-      logHealth(`watchdog_miss_${misses}`);
+      appendHealthLog(`watchdog_miss_${misses}`);
       if (misses >= 3) {
-        logHealth('watchdog_reload');
+        appendHealthLog('watchdog_reload');
         window.location.reload();
       }
     }, 60000);
@@ -131,7 +111,7 @@ export function App() {
       const done = localStorage.getItem(key);
       if (done !== marker) {
         localStorage.setItem(key, marker);
-        logHealth('scheduled_reload_0330');
+        appendHealthLog('scheduled_reload_0330');
         window.location.reload();
       }
     }

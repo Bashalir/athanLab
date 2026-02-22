@@ -6,6 +6,7 @@ import { AthanSection }     from './AthanSection';
 import { DebugSection }     from './DebugSection';
 import { JSONSection }      from './JSONSection';
 import { ThemeSection }     from './ThemeSection';
+import { LogsSection }      from './LogsSection';
 
 declare const __APP_VERSION__: string;
 
@@ -70,6 +71,10 @@ export function SettingsPanel({
         <div className="divider" />
 
         <JSONSection customJSON={customJSON} dispatch={dispatch} onClose={close} />
+
+        <div className="divider" />
+
+        <LogsSection buildVersion={__APP_VERSION__} />
       </div>
     </div>
   );
