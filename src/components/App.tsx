@@ -25,29 +25,6 @@ export function App() {
     setupAdhanAudioUnlock();
   }, []);
 
-  // Auto-geoloc on first load
-  useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async pos => {
-          const lat = pos.coords.latitude;
-          const lng = pos.coords.longitude;
-          let cityName = 'Ma position';
-          try {
-            const r = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
-            );
-            const d = await r.json();
-            cityName = d.address.city || d.address.town || d.address.village || 'Ma position';
-          } catch { /* keep default */ }
-          dispatch({ type: 'SET_LOCATION', lat, lng, cityName });
-        },
-        () => { /* fallback: Paris already set */ },
-        { timeout: 6000 }
-      );
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   // Check adhan each tick
   useEffect(() => {
     if (state.prayers && !state.fakeMinutes) {

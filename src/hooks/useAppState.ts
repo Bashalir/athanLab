@@ -6,7 +6,7 @@ import { storageGet, storageSet } from '../lib/safeStorage';
 
 // ─── Initial State ────────────────────────────────────────────────
 const getInitialWeatherConfig = (): WeatherConfig => ({
-  service: (storageGet('weather_service') as WeatherConfig['service']) || 'none',
+  service: (storageGet('weather_service') as WeatherConfig['service']) || 'openmeteo',
   apiKey:  storageGet('weather_key') || '',
 });
 
@@ -20,7 +20,7 @@ const INITIAL_STATE: AppState = {
   debug:         true,
   fakeMinutes:   null,
   settingsOpen:  false,
-  weatherConfig: { service: 'none', apiKey: '' },
+  weatherConfig: { service: 'openmeteo', apiKey: '' },
   theme:         'night',
 };
 

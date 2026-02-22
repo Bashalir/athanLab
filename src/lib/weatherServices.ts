@@ -33,11 +33,39 @@ export const WEATHER_NEEDS_KEY: WeatherService[] = [
   'openweathermap', 'weatherapi', 'accuweather', 'meteofrance',
 ];
 
+async function getJSON(url: string): Promise<any> {
+  if (typeof XMLHttpRequest === 'function') {
+    return new Promise((resolve, reject) => {
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState !== 4) return;
+          if (xhr.status >= 200 && xhr.status < 300) {
+            try {
+              resolve(JSON.parse(xhr.responseText));
+            } catch (e) {
+              reject(e);
+            }
+            return;
+          }
+          reject(new Error(`HTTP ${xhr.status}`));
+        };
+        xhr.onerror = () => reject(new Error('Network error'));
+        xhr.send();
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+  const r = await fetch(url);
+  return r.json();
+}
+
 // ─── Fetch Functions ──────────────────────────────────────────────
 async function fetchOpenMeteo(lat: number, lng: number): Promise<WeatherData> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current=temperature_2m,weather_code,windspeed_10m&temperature_unit=celsius&timezone=auto`;
-  const r = await fetch(url);
-  const d = await r.json();
+  const d = await getJSON(url);
   const c = d.current;
   const code = c.weather_code ?? c.weathercode ?? 0;
   return {
@@ -50,8 +78,7 @@ async function fetchOpenMeteo(lat: number, lng: number): Promise<WeatherData> {
 
 async function fetchOWM(lat: number, lng: number, key: string): Promise<WeatherData> {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${key}&units=metric&lang=fr`;
-  const r = await fetch(url);
-  const d = await r.json();
+  const d = await getJSON(url);
   const id = d.weather[0].id as number;
   const icon = id <= 232 ? '⛈' : id <= 531 ? '🌧' : id <= 622 ? '❄️' : id <= 781 ? '🌫' : id === 800 ? '☀️' : id <= 804 ? '⛅' : '🌡';
   return {
@@ -64,8 +91,7 @@ async function fetchOWM(lat: number, lng: number, key: string): Promise<WeatherD
 
 async function fetchWeatherAPI(lat: number, lng: number, key: string): Promise<WeatherData> {
   const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${lat},${lng}&lang=fr`;
-  const r = await fetch(url);
-  const d = await r.json();
+  const d = await getJSON(url);
   const c = d.current;
   const code = c.condition.code as number;
   const icon = code <= 1000 ? '☀️' : code <= 1006 ? '⛅' : code <= 1030 ? '🌫' : c.is_day ? '🌦' : '🌧';
