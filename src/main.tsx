@@ -1,6 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './components/App';
+import { installFetchPolyfill } from './lib/fetchPolyfill';
 
 const supportsCssVars = (() => {
   const css = window.CSS;
@@ -10,6 +11,7 @@ const supportsCssVars = (() => {
 if (!supportsCssVars) {
   document.documentElement.classList.add('no-css-vars');
 }
+installFetchPolyfill();
 const ua = window.navigator.userAgent || '';
 if (/iPad|iPhone|iPod/.test(ua)) {
   document.documentElement.classList.add('ios-device');
