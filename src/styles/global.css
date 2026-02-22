@@ -120,6 +120,13 @@ html.no-css-vars .settings-header {
   padding: 14px 12px;
 }
 html.no-css-vars .settings-title-main { font-size: 0.9rem; }
+html.no-css-vars .settings-build-id {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+}
 html.no-css-vars .settings-body {
   display: block;
   width: auto;
@@ -597,6 +604,18 @@ html.no-css-vars.ios-standalone .top-bar {
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: rgba(255,255,255,0.8);
+}
+.settings-header-left {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.settings-build-id {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.45);
+  letter-spacing: 0.08em;
+  font-family: var(--f-body);
+  text-transform: none;
 }
 .settings-close {
   background: rgba(255,255,255,0.06);

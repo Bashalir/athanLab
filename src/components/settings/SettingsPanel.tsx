@@ -7,6 +7,8 @@ import { DebugSection }     from './DebugSection';
 import { JSONSection }      from './JSONSection';
 import { ThemeSection }     from './ThemeSection';
 
+declare const __APP_VERSION__: string;
+
 interface Props {
   open:          boolean;
   method:        CalculationMethod;
@@ -29,7 +31,10 @@ export function SettingsPanel({
   return (
     <div className={`settings-panel${open ? ' open' : ''}`}>
       <div className="settings-header">
-        <span className="settings-title-main">Paramètres</span>
+        <div className="settings-header-left">
+          <span className="settings-title-main">Paramètres</span>
+          <span className="settings-build-id">{__APP_VERSION__}</span>
+        </div>
         <button className="settings-close" onClick={close}>✕</button>
       </div>
 
