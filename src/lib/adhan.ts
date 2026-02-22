@@ -3,6 +3,9 @@ import { NAMES_AR, NAMES_FR } from './prayerCalc';
 
 // ─── Adhan Audio ──────────────────────────────────────────────────
 const audioCache: Record<string, HTMLAudioElement> = {};
+const AUDIO_BASE = import.meta.env.BASE_URL;
+const SRC_FAJR = `${AUDIO_BASE}athan-fajr.mp3`;
+const SRC_DEFAULT = `${AUDIO_BASE}athan.mp3`;
 
 function getAudio(src: string): HTMLAudioElement {
   if (!audioCache[src]) {
@@ -14,6 +17,32 @@ function getAudio(src: string): HTMLAudioElement {
 
 export function pauseAdhan() {
   Object.values(audioCache).forEach(a => a.pause());
+}
+
+export function setupAdhanAudioUnlock() {
+  let unlocked = false;
+  const unlock = () => {
+    if (unlocked) return;
+    unlocked = true;
+    const targets = [SRC_FAJR, SRC_DEFAULT].map(getAudio);
+    targets.forEach((a) => {
+      a.muted = true;
+      a.play()
+        .then(() => {
+          a.pause();
+          a.currentTime = 0;
+          a.muted = false;
+        })
+        .catch(() => {
+          a.muted = false;
+        });
+    });
+    document.removeEventListener('touchend', unlock);
+    document.removeEventListener('click', unlock);
+  };
+
+  document.addEventListener('touchend', unlock, { passive: true });
+  document.addEventListener('click', unlock);
 }
 
 // ─── Adhan Trigger ────────────────────────────────────────────────
@@ -42,7 +71,7 @@ export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
 }
 
 export function triggerAdhan(prayerKey: string) {
-  const src = prayerKey === 'fajr' ? './athan-fajr.mp3' : './athan.mp3';
+  const src = prayerKey === 'fajr' ? SRC_FAJR : SRC_DEFAULT;
   const audio = getAudio(src);
   audio.currentTime = 0;
   audio.play().catch(() => {});
@@ -100,7 +129,7 @@ export function showAdhanAlert(prayerKey: string) {
 
   document.body.appendChild(div);
 
-  const src = prayerKey === 'fajr' ? './athan-fajr.mp3' : './athan.mp3';
+  const src = prayerKey === 'fajr' ? SRC_FAJR : SRC_DEFAULT;
   div.querySelector('#adhan-close-btn')?.addEventListener('click', () => {
     getAudio(src).pause();
     div.remove();
