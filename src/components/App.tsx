@@ -15,6 +15,7 @@ import '../styles/tokens.css';
 import '../styles/global.css';
 
 declare const __BUILD_ID__: string;
+declare const __APP_VERSION__: string;
 
 function getLatestIndexHTML(url: string): Promise<string> {
   return httpGetText(url).catch(() => '');
@@ -29,6 +30,7 @@ export function App() {
     state.prayers, state.debug, state.fakeMinutes
   );
   const weather = useWeather(state.lat, state.lng, state.weatherConfig);
+  const FORCE_TOKEN_KEY = 'force_reload_token_seen';
 
   // PWA init (once)
   useEffect(() => {
@@ -59,6 +61,35 @@ export function App() {
       }
     };
     const id = window.setInterval(check, 5 * 60 * 1000);
+    return () => window.clearInterval(id);
+  }, []);
+
+  // Remote force-reload command for kiosk/PWA devices.
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL || '/';
+    const readSeen = () => {
+      try { return localStorage.getItem(FORCE_TOKEN_KEY) || ''; } catch { return ''; }
+    };
+    const writeSeen = (value: string) => {
+      try { localStorage.setItem(FORCE_TOKEN_KEY, value); } catch { /* ignore */ }
+    };
+    const check = async () => {
+      const token = (await getLatestIndexHTML(`${base}force-reload.txt?ts=${Date.now()}`)).trim();
+      if (!token) return;
+      const seen = readSeen();
+      if (!seen) {
+        writeSeen(token);
+        appendHealthLog(`force_token_init_${token}`);
+        return;
+      }
+      if (seen !== token) {
+        writeSeen(token);
+        appendHealthLog(`force_reload_${token}`);
+        window.location.reload();
+      }
+    };
+    check();
+    const id = window.setInterval(check, 60 * 1000);
     return () => window.clearInterval(id);
   }, []);
 
