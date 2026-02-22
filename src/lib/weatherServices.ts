@@ -1,5 +1,6 @@
 import type { WeatherConfig, WeatherData, WeatherService } from '../types';
 import { appendHealthLog } from './healthLog';
+import { httpGetJSON } from './http';
 
 // ─── WMO Weather Codes ────────────────────────────────────────────
 const WMO_ICONS: Record<number, string> = {
@@ -35,34 +36,7 @@ export const WEATHER_NEEDS_KEY: WeatherService[] = [
 ];
 
 async function getJSON(url: string): Promise<any> {
-  if (typeof XMLHttpRequest === 'function') {
-    return new Promise((resolve, reject) => {
-      try {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.timeout = 8000;
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState !== 4) return;
-          if (xhr.status >= 200 && xhr.status < 300) {
-            try {
-              resolve(JSON.parse(xhr.responseText));
-            } catch (e) {
-              reject(e);
-            }
-            return;
-          }
-          reject(new Error(`HTTP ${xhr.status}`));
-        };
-        xhr.onerror = () => reject(new Error('Network error'));
-        xhr.ontimeout = () => reject(new Error('Timeout'));
-        xhr.send();
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-  const r = await fetch(url);
-  return r.json();
+  return httpGetJSON(url, 8000);
 }
 
 // ─── Fetch Functions ──────────────────────────────────────────────

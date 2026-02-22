@@ -3,6 +3,7 @@ import type { AppState, AppAction, WeatherConfig } from '../types';
 import { computePrayerTimes, parseCustomJSON } from '../lib/prayerCalc';
 import { resolveTheme } from '../lib/themes';
 import { storageGet, storageSet } from '../lib/safeStorage';
+import { httpGetJSON } from '../lib/http';
 
 // ─── Initial State ────────────────────────────────────────────────
 const getInitialWeatherConfig = (): WeatherConfig => ({
@@ -119,29 +120,9 @@ export function useAppState() {
       dispatch({ type: 'SET_CUSTOM_JSON', json: json as Record<string, unknown> });
     };
 
-    if (typeof fetch === 'function') {
-      fetch(url)
-        .then((r) => (r.ok ? r.json() : null))
-        .then(applyJSON)
-        .catch(() => {});
-    } else {
-      // iOS 9 fallback when fetch is unavailable.
-      try {
-        const xhr = new XMLHttpRequest();
-        xhr.open('GET', url, true);
-        xhr.onreadystatechange = () => {
-          if (xhr.readyState !== 4 || xhr.status !== 200) return;
-          try {
-            applyJSON(JSON.parse(xhr.responseText));
-          } catch {
-            // Keep astronomical fallback if JSON parsing fails.
-          }
-        };
-        xhr.send();
-      } catch {
-        // Keep astronomical fallback if XHR is unavailable.
-      }
-    }
+    httpGetJSON(url)
+      .then(applyJSON)
+      .catch(() => {});
 
     return () => { cancelled = true; };
   }, [state.customJSON]);

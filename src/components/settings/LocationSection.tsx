@@ -1,5 +1,6 @@
 import { useRef } from 'react';
 import type { AppAction } from '../../types';
+import { httpGetJSON } from '../../lib/http';
 
 interface Props {
   cityName: string;
@@ -16,10 +17,9 @@ export function LocationSection({ cityName: _cityName, lat, lng, dispatch, onClo
     const q = inputRef.current?.value.trim();
     if (!q) return;
     try {
-      const r = await fetch(
+      const d = await httpGetJSON<Array<{ lat: string; lon: string; display_name: string }>>(
         `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1`
       );
-      const d = await r.json();
       if (!d.length) { alert('Ville non trouvée'); return; }
       dispatch({
         type:     'SET_LOCATION',
@@ -38,11 +38,10 @@ export function LocationSection({ cityName: _cityName, lat, lng, dispatch, onClo
       const lng = pos.coords.longitude;
       let cityName = 'Ma position';
       try {
-        const r = await fetch(
+        const d = await httpGetJSON<{ address?: { city?: string; town?: string; village?: string } }>(
           `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
         );
-        const d = await r.json();
-        cityName = d.address.city || d.address.town || d.address.village || 'Ma position';
+        cityName = d.address?.city || d.address?.town || d.address?.village || 'Ma position';
       } catch { /* keep default */ }
       dispatch({ type: 'SET_LOCATION', lat, lng, cityName });
       onClose();

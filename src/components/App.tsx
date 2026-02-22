@@ -5,6 +5,7 @@ import { useWeather }       from '../hooks/useWeather';
 import { checkAdhan, setupAdhanAudioUnlock } from '../lib/adhan';
 import { registerServiceWorker } from '../lib/pwa';
 import { appendHealthLog } from '../lib/healthLog';
+import { httpGetText } from '../lib/http';
 import { LoadingScreen }    from './LoadingScreen';
 import { SkySection }       from './SkySection';
 import { NextPrayerBanner } from './NextPrayerBanner';
@@ -16,27 +17,7 @@ import '../styles/global.css';
 declare const __BUILD_ID__: string;
 
 function getLatestIndexHTML(url: string): Promise<string> {
-  if (typeof fetch === 'function') {
-    return fetch(url, { cache: 'no-store' }).then((r) => (r.ok ? r.text() : ''));
-  }
-  return new Promise((resolve) => {
-    try {
-      const xhr = new XMLHttpRequest();
-      xhr.open('GET', url, true);
-      xhr.onreadystatechange = () => {
-        if (xhr.readyState !== 4) return;
-        if (xhr.status >= 200 && xhr.status < 300) {
-          resolve(xhr.responseText || '');
-          return;
-        }
-        resolve('');
-      };
-      xhr.onerror = () => resolve('');
-      xhr.send();
-    } catch {
-      resolve('');
-    }
-  });
+  return httpGetText(url).catch(() => '');
 }
 
 export function App() {
