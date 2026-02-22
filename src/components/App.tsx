@@ -12,6 +12,32 @@ import { PrayerBar }        from './PrayerBar';
 import '../styles/tokens.css';
 import '../styles/global.css';
 
+declare const __BUILD_ID__: string;
+
+function getLatestIndexHTML(url: string): Promise<string> {
+  if (typeof fetch === 'function') {
+    return fetch(url, { cache: 'no-store' }).then((r) => (r.ok ? r.text() : ''));
+  }
+  return new Promise((resolve) => {
+    try {
+      const xhr = new XMLHttpRequest();
+      xhr.open('GET', url, true);
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState !== 4) return;
+        if (xhr.status >= 200 && xhr.status < 300) {
+          resolve(xhr.responseText || '');
+          return;
+        }
+        resolve('');
+      };
+      xhr.onerror = () => resolve('');
+      xhr.send();
+    } catch {
+      resolve('');
+    }
+  });
+}
+
 export function App() {
   const { state, dispatch } = useAppState();
   const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
@@ -40,6 +66,30 @@ export function App() {
     registerServiceWorker();
     setupAdhanAudioUnlock();
     logHealth('startup');
+  }, []);
+
+  // Auto-update: poll latest index and reload when a new build is detected.
+  useEffect(() => {
+    const base = import.meta.env.BASE_URL || '/';
+    const check = async () => {
+      const html = await getLatestIndexHTML(`${base}index.html?ts=${Date.now()}`);
+      if (!html) return;
+      const srcMatch = html.match(/data-src=\"([^\"]+)\"/) || html.match(/src=\"([^\"]*index-legacy[^\"]*\.js)\"/);
+      if (!srcMatch || !srcMatch[1]) return;
+      const scriptPath = srcMatch[1];
+      const scriptURL = scriptPath.startsWith('http')
+        ? scriptPath
+        : `${window.location.origin}${scriptPath}`;
+      const js = await getLatestIndexHTML(`${scriptURL}${scriptURL.includes('?') ? '&' : '?'}ts=${Date.now()}`);
+      const match = js.match(/salat-\d+/);
+      if (!match) return;
+      if (match[0] !== __BUILD_ID__) {
+        logHealth(`autoupdate_reload_${match[0]}`);
+        window.location.reload();
+      }
+    };
+    const id = window.setInterval(check, 5 * 60 * 1000);
+    return () => window.clearInterval(id);
   }, []);
 
   // Force-stable defaults on iPad 2 / iOS 9 kiosk.
