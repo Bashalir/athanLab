@@ -3,6 +3,7 @@ import type { AppState, AppAction, WeatherConfig } from '../types';
 import { computePrayerTimes, parseCustomJSON } from '../lib/prayerCalc';
 import { resolveTheme } from '../lib/themes';
 import { storageGet, storageSet } from '../lib/safeStorage';
+import gmp2026 from '../data/gmp-2026.json';
 
 // ─── Initial State ────────────────────────────────────────────────
 const getInitialWeatherConfig = (): WeatherConfig => ({
@@ -104,24 +105,14 @@ export function useAppState() {
     } catch { /* ignore */ }
   }, []);
 
-  // Default timetable fallback: load bundled GMP JSON when no custom file is set.
+  // Default timetable fallback: use bundled GMP JSON with no network dependency.
   useEffect(() => {
     if (state.customJSON) return;
-    if (typeof fetch !== 'function') return;
-    let cancelled = false;
-    const url = `${import.meta.env.BASE_URL}gmp-2026.json`;
-
-    fetch(url)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((json) => {
-        if (cancelled || !json) return;
-        dispatch({ type: 'SET_CUSTOM_JSON', json, cityName: 'GMP 2026' });
-      })
-      .catch(() => {
-        // Keep astronomical fallback if JSON is unavailable.
-      });
-
-    return () => { cancelled = true; };
+    dispatch({
+      type: 'SET_CUSTOM_JSON',
+      json: gmp2026 as Record<string, unknown>,
+      cityName: 'GMP 2026',
+    });
   }, [state.customJSON]);
 
   return { state, dispatch };
