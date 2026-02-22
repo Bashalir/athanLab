@@ -28,7 +28,11 @@ html.no-css-vars .fanoos-body::before { border: 1px solid rgba(255,215,0,0.4); }
 html.no-css-vars .fanoos-body::after { background: rgba(255,215,0,0.6); box-shadow: 0 0 10px rgba(255,215,0,0.4); }
 html.no-css-vars .central-ornament { opacity: 0.06; }
 html.no-css-vars .top-bar { background: rgba(0,0,0,0.18); border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
-html.no-css-vars .clock { font-family: 'Amiri', serif; color: rgba(255,255,255,0.92); }
+html.no-css-vars .clock {
+  font-family: 'Amiri', serif;
+  color: rgba(255,255,255,0.92);
+  font-size: 24vw;
+}
 html.no-css-vars .time-divider::after { color: rgba(255,215,0,0.6); }
 html.no-css-vars .date-hijri { font-family: 'Amiri', serif; color: #2ecc71; text-shadow: 0 0 20px rgba(46,204,113,0.3); }
 html.no-css-vars .prayer-board-wrap { background: rgba(5,5,8,0.96); border-top: 1px solid rgba(46,204,113,0.25); }
@@ -288,6 +292,7 @@ html.no-css-vars .loading-spinner {
 .clock {
   font-family: var(--f-arabic);
   font-weight: 400;
+  font-size: 24vw; /* Fallback for old browsers without clamp() */
   font-size: clamp(8rem, 28vw, 18rem);
   color: var(--c-text-hi);
   letter-spacing: 0.06em;
@@ -781,6 +786,7 @@ html.no-css-vars .loading-spinner {
 
 /* ─── RESPONSIVE LANDSCAPE ────────────────────────────────────────── */
 @media (orientation: landscape) and (max-height: 500px) {
+  .clock { font-size: 6rem; }
   .clock { font-size: clamp(5rem, 12vw, 8rem); }
   .prayer-name-ar { font-size: clamp(1.2rem, 3vw, 1.6rem); }
   .prayer-time { font-size: clamp(1rem, 2.5vw, 1.4rem); }
