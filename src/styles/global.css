@@ -65,8 +65,19 @@ html.no-css-vars .prayer-item.active .prayer-name-ar { color: #2ecc71; }
 html.no-css-vars .prayer-item.active .prayer-name-fr { color: rgba(46,204,113,0.5); }
 html.no-css-vars .prayer-time { color: rgba(255,255,255,0.92); }
 html.no-css-vars .prayer-name-fr { font-size: 0.95rem; }
-html.no-css-vars .prayer-time { font-size: 2rem; font-weight: 600; }
-html.no-css-vars .prayer-item.active .prayer-time { font-size: 2.6rem; }
+html.no-css-vars .prayer-time {
+  font-family: 'Amiri', serif;
+  font-size: 2rem;
+  font-weight: 700;
+}
+html.no-css-vars .prayer-item.active .prayer-time {
+  font-size: 3.2rem;
+  font-weight: 800;
+}
+html.no-css-vars .next-prayer-banner {
+  font-family: 'Amiri', serif;
+  font-size: 1.2rem;
+}
 html.no-css-vars .prayer-item.active .prayer-time {
   background: linear-gradient(135deg, #a8ff78 0%, #2ecc71 50%, #1a9e5c 100%);
   -webkit-background-clip: text;
