@@ -21,16 +21,9 @@ export function httpGetText(url: string, timeoutMs = 10000): Promise<string> {
       }
     });
   }
-
-  const wf = (window as Window & { fetch?: (input: string, init?: unknown) => Promise<{ ok: boolean; text: () => Promise<string> }> }).fetch;
-  if (typeof wf === 'function') {
-    return wf(url, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.text() : ''));
-  }
-  return Promise.resolve('');
+  return Promise.reject(new Error('XHR unavailable'));
 }
 
 export function httpGetJSON<T = unknown>(url: string, timeoutMs = 10000): Promise<T> {
   return httpGetText(url, timeoutMs).then((txt) => JSON.parse(txt) as T);
 }
-
