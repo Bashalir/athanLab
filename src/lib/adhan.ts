@@ -1,5 +1,6 @@
 import type { PrayerTimes } from '../types';
 import { NAMES_FR } from './prayerCalc';
+type PrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
 // ─── Adhan Audio ──────────────────────────────────────────────────
 const audioCache: Record<string, HTMLAudioElement> = {};
@@ -69,16 +70,20 @@ export function setupAdhanAudioUnlock() {
 const playedPrayers = new Set<string>();
 let lastCheckedDate = '';
 
-export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
-  const today   = new Date().toDateString();
-  const nowSecs = new Date().getSeconds();
-
+function syncAdhanDay() {
+  const today = new Date().toDateString();
   if (today !== lastCheckedDate) {
     playedPrayers.clear();
     lastCheckedDate = today;
   }
+  return today;
+}
 
-  const keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
+export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
+  const today   = syncAdhanDay();
+  const nowSecs = new Date().getSeconds();
+
+  const keys: PrayerKey[] = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
   keys.forEach(k => {
     const p   = prayers[k];
     const key = `${today}-${k}`;
@@ -88,6 +93,15 @@ export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
       triggerAdhan(k);
     }
   });
+}
+
+export function triggerDebugAdhan(prayerKey: PrayerKey, prayers: PrayerTimes) {
+  const today = syncAdhanDay();
+  if (prayers[prayerKey].mins === null) return;
+  const key = `${today}-${prayerKey}`;
+  if (playedPrayers.has(key)) return;
+  playedPrayers.add(key);
+  triggerAdhan(prayerKey);
 }
 
 export function triggerAdhan(prayerKey: string) {

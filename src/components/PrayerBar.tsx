@@ -1,6 +1,6 @@
 import type { PrayerTimes } from '../types';
 import { PrayerItem } from './PrayerItem';
-import { triggerAdhan } from '../lib/adhan';
+import { triggerDebugAdhan } from '../lib/adhan';
 
 const KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'] as const;
 
@@ -36,8 +36,10 @@ export function PrayerBar({ prayers, nowMins, debug, onFakeTime }: Props) {
           debug={debug}
           onDebugClick={() => {
             const mins = prayers[k].mins;
-            if (mins !== null) onFakeTime(mins - 1);
-            triggerAdhan(k);
+            if (mins !== null) {
+              onFakeTime(mins);
+              triggerDebugAdhan(k, prayers);
+            }
           }}
         />
       ))}
