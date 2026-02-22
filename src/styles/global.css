@@ -39,7 +39,12 @@ html.no-css-vars .date-hijri {
   color: #2ecc71;
   text-transform: uppercase;
   opacity: 1;
+  font-size: 2rem;
   text-shadow: 0 0 24px rgba(46,204,113,0.45);
+}
+html.no-css-vars .date-gregorian {
+  font-size: 1.4rem;
+  font-weight: 500;
 }
 html.no-css-vars .prayer-board-wrap { background: rgba(5,5,8,0.96); border-top: 1px solid rgba(46,204,113,0.25); }
 html.no-css-vars .prayer-board { background: rgba(5,5,8,0.96); }
@@ -59,6 +64,9 @@ html.no-css-vars .prayer-name-ar { font-family: 'Amiri', serif; color: rgba(255,
 html.no-css-vars .prayer-item.active .prayer-name-ar { color: #2ecc71; }
 html.no-css-vars .prayer-item.active .prayer-name-fr { color: rgba(46,204,113,0.5); }
 html.no-css-vars .prayer-time { color: rgba(255,255,255,0.92); }
+html.no-css-vars .prayer-name-fr { font-size: 0.95rem; }
+html.no-css-vars .prayer-time { font-size: 2rem; font-weight: 600; }
+html.no-css-vars .prayer-item.active .prayer-time { font-size: 2.6rem; }
 html.no-css-vars .prayer-item.active .prayer-time {
   background: linear-gradient(135deg, #a8ff78 0%, #2ecc71 50%, #1a9e5c 100%);
   -webkit-background-clip: text;
@@ -394,16 +402,16 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 
 .date-gregorian {
-  font-size: clamp(1rem, 3vw, 1.6rem);
+  font-size: clamp(1.4rem, 4.2vw, 2.2rem);
   color: rgba(255,255,255,0.65);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  font-weight: 300;
+  font-weight: 500;
 }
 
 .date-hijri {
   font-family: var(--f-arabic);
-  font-size: clamp(1.2rem, 3.5vw, 1.8rem);
+  font-size: clamp(1.8rem, 5vw, 2.8rem);
   color: var(--c-accent);
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -508,7 +516,7 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 
 .prayer-name-fr {
-  font-size: clamp(0.7rem, 1.8vw, 1rem);
+  font-size: clamp(0.9rem, 2.3vw, 1.35rem);
   color: rgba(255,255,255,0.4);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -521,7 +529,7 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 
 .prayer-time {
-  font-size: clamp(1.4rem, 3.5vw, 1.9rem);
+  font-size: clamp(2rem, 5.2vw, 3rem);
   font-weight: 400;
   color: var(--c-text-hi);
   letter-spacing: 0.05em;
@@ -529,7 +537,7 @@ html.no-css-vars.ios-standalone .top-bar {
   transition: font-size 0.4s ease;
 }
 .prayer-item.active .prayer-time {
-  font-size: clamp(2rem, 6vw, 3rem);
+  font-size: clamp(2.8rem, 7.5vw, 4.2rem);
   font-weight: 300;
   background: var(--c-prayer-gradient);
   -webkit-background-clip: text;
