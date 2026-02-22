@@ -3,7 +3,6 @@ import type { AppState, AppAction, WeatherConfig } from '../types';
 import { computePrayerTimes, parseCustomJSON } from '../lib/prayerCalc';
 import { resolveTheme } from '../lib/themes';
 import { storageGet, storageSet } from '../lib/safeStorage';
-import gmp2026 from '../data/gmp-2026.json';
 
 // ─── Initial State ────────────────────────────────────────────────
 const getInitialWeatherConfig = (): WeatherConfig => ({
@@ -105,14 +104,42 @@ export function useAppState() {
     } catch { /* ignore */ }
   }, []);
 
-  // Default timetable fallback: use bundled GMP JSON with no network dependency.
+  // Default timetable fallback: load external GMP JSON with XHR fallback for old iOS.
   useEffect(() => {
     if (state.customJSON) return;
-    dispatch({
-      type: 'SET_CUSTOM_JSON',
-      json: gmp2026 as Record<string, unknown>,
-      cityName: 'GMP 2026',
-    });
+    let cancelled = false;
+    const url = `${import.meta.env.BASE_URL}gmp-2026.json`;
+
+    const applyJSON = (json: unknown) => {
+      if (cancelled || !json || typeof json !== 'object') return;
+      dispatch({ type: 'SET_CUSTOM_JSON', json: json as Record<string, unknown>, cityName: 'GMP 2026' });
+    };
+
+    if (typeof fetch === 'function') {
+      fetch(url)
+        .then((r) => (r.ok ? r.json() : null))
+        .then(applyJSON)
+        .catch(() => {});
+    } else {
+      // iOS 9 fallback when fetch is unavailable.
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open('GET', url, true);
+        xhr.onreadystatechange = () => {
+          if (xhr.readyState !== 4 || xhr.status !== 200) return;
+          try {
+            applyJSON(JSON.parse(xhr.responseText));
+          } catch {
+            // Keep astronomical fallback if JSON parsing fails.
+          }
+        };
+        xhr.send();
+      } catch {
+        // Keep astronomical fallback if XHR is unavailable.
+      }
+    }
+
+    return () => { cancelled = true; };
   }, [state.customJSON]);
 
   return { state, dispatch };
