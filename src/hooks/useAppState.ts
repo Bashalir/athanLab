@@ -112,7 +112,7 @@ export function useAppState() {
 
     const applyJSON = (json: unknown) => {
       if (cancelled || !json || typeof json !== 'object') return;
-      dispatch({ type: 'SET_CUSTOM_JSON', json: json as Record<string, unknown>, cityName: 'GMP 2026' });
+      dispatch({ type: 'SET_CUSTOM_JSON', json: json as Record<string, unknown> });
     };
 
     if (typeof fetch === 'function') {
