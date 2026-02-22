@@ -6,7 +6,11 @@ import { storageGet, storageSet } from '../lib/safeStorage';
 
 // ─── Initial State ────────────────────────────────────────────────
 const getInitialWeatherConfig = (): WeatherConfig => ({
-  service: (storageGet('weather_service') as WeatherConfig['service']) || 'openmeteo',
+  service: (() => {
+    const saved = storageGet('weather_service') as WeatherConfig['service'] | null;
+    if (!saved || saved === 'none') return 'openmeteo';
+    return saved;
+  })(),
   apiKey:  storageGet('weather_key') || '',
 });
 
