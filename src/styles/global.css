@@ -27,7 +27,7 @@ html.no-css-vars .fanoos-body { background: linear-gradient(135deg, rgba(255,255
 html.no-css-vars .fanoos-body::before { border: 1px solid rgba(255,215,0,0.4); }
 html.no-css-vars .fanoos-body::after { background: rgba(255,215,0,0.6); box-shadow: 0 0 10px rgba(255,215,0,0.4); }
 html.no-css-vars .central-ornament { opacity: 0.06; }
-html.no-css-vars .top-bar { background: rgba(0,0,0,0.18); border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
+html.no-css-vars .top-bar { background: transparent; border-bottom: 1px solid rgba(255,255,255,0.06); color: rgba(255,255,255,0.55); }
 html.no-css-vars .clock {
   font-family: 'Amiri', serif;
   color: rgba(255,255,255,0.92);
@@ -310,8 +310,8 @@ html.no-css-vars .theme-btn {
   align-items: center;
   justify-content: space-between;
   padding: 0 20px 0 22px;
-  background: var(--c-topbar);
-  backdrop-filter: blur(8px);
+  background: transparent;
+  backdrop-filter: none;
   border-bottom: 1px solid var(--c-border);
   font-size: 1rem;
   letter-spacing: 0.1em;
