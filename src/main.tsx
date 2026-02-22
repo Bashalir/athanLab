@@ -10,6 +10,10 @@ const supportsCssVars = (() => {
 if (!supportsCssVars) {
   document.documentElement.classList.add('no-css-vars');
 }
+const ua = window.navigator.userAgent || '';
+if (/iPad|iPhone|iPod/.test(ua)) {
+  document.documentElement.classList.add('ios-device');
+}
 if ((window.navigator as Navigator & { standalone?: boolean }).standalone) {
   document.documentElement.classList.add('ios-standalone');
 }

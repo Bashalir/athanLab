@@ -299,8 +299,14 @@ html.no-css-vars .theme-btn {
   color: var(--c-text-mid);
   font-weight: 300;
 }
+html.ios-device .top-bar {
+  top: 20px;
+}
 html.ios-standalone .top-bar {
   top: 32px;
+}
+html.no-css-vars.ios-device .top-bar {
+  top: 30px;
 }
 html.no-css-vars.ios-standalone .top-bar {
   top: 40px;
