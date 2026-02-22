@@ -86,6 +86,48 @@ html.no-css-vars .loading-spinner {
   border: 2px solid rgba(46,204,113,0.15);
   border-top-color: rgba(255,215,0,0.7);
 }
+html.no-css-vars .settings-panel {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+  backdrop-filter: none;
+  overflow-y: scroll;
+  -webkit-overflow-scrolling: touch;
+}
+html.no-css-vars .settings-header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: #070814;
+  padding: 14px 12px;
+}
+html.no-css-vars .settings-title-main { font-size: 0.9rem; }
+html.no-css-vars .settings-body {
+  display: block;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 12px;
+}
+html.no-css-vars .setting-section {
+  display: block;
+  margin-bottom: 12px;
+}
+html.no-css-vars .setting-title {
+  font-size: 0.72rem;
+  margin-bottom: 8px;
+}
+html.no-css-vars .settings-btn-row { display: block; }
+html.no-css-vars .settings-btn-row .s-btn {
+  display: block;
+  width: 100%;
+  margin: 0 0 8px;
+}
+html.no-css-vars .theme-grid { display: block; }
+html.no-css-vars .theme-btn {
+  width: 100%;
+  display: block;
+  margin: 0 0 8px;
+}
 
 /* ─── SKY SECTION ─────────────────────────────────────────────────── */
 .sky-section {
@@ -652,6 +694,12 @@ html.no-css-vars .loading-spinner {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 8px;
+}
+@media (max-width: 1024px) {
+  .theme-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 560px) {
+  .theme-grid { grid-template-columns: 1fr; }
 }
 
 .theme-btn {
