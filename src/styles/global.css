@@ -286,15 +286,15 @@ html.no-css-vars .theme-btn {
   position: absolute;
   top: 0; left: 0; right: 0;
   z-index: 20;
-  height: 36px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 14px 0 16px;
+  padding: 0 18px 0 20px;
   background: var(--c-topbar);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--c-border);
-  font-size: 0.72rem;
+  font-size: 0.86rem;
   letter-spacing: 0.1em;
   color: var(--c-text-mid);
   font-weight: 300;
@@ -324,11 +324,11 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 .top-bar-temp {
   color: rgba(255,255,255,0.85);
-  font-size: 0.85rem;
+  font-size: 0.95rem;
   font-weight: 300;
 }
 .top-bar-desc { color: rgba(255,255,255,0.38); }
-.top-bar-icon { font-size: 1rem; opacity: 0.8; }
+.top-bar-icon { font-size: 1.1rem; opacity: 0.85; }
 .top-bar-right {
   display: flex;
   align-items: center;
@@ -336,7 +336,7 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 .top-bar-wind {
   color: rgba(255,255,255,0.35);
-  font-size: 0.68rem;
+  font-size: 0.78rem;
 }
 
 /* ─── TIME DISPLAY ────────────────────────────────────────────────── */
