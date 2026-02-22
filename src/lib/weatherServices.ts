@@ -41,7 +41,7 @@ async function getJSON(url: string): Promise<any> {
 
 // ─── Fetch Functions ──────────────────────────────────────────────
 async function fetchOpenMeteo(lat: number, lng: number): Promise<WeatherData> {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat.toFixed(4)}&longitude=${lng.toFixed(4)}&current=temperature_2m,weather_code,windspeed_10m&temperature_unit=celsius&timezone=auto`;
+  const url = `https://athan-lab.fotoproia.workers.dev/?lat=${lat.toFixed(4)}&lng=${lng.toFixed(4)}`;
   const d = await getJSON(url);
   const c = d.current;
   const code = c.weather_code ?? c.weathercode ?? 0;
