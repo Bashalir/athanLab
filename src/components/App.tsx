@@ -3,7 +3,7 @@ import { useAppState }      from '../hooks/useAppState';
 import { useClock }         from '../hooks/useClock';
 import { useWeather }       from '../hooks/useWeather';
 import { checkAdhan }       from '../lib/adhan';
-import { registerServiceWorker, injectManifest } from '../lib/pwa';
+import { registerServiceWorker } from '../lib/pwa';
 import { LoadingScreen }    from './LoadingScreen';
 import { SkySection }       from './SkySection';
 import { NextPrayerBanner } from './NextPrayerBanner';
@@ -22,7 +22,6 @@ export function App() {
   // PWA init (once)
   useEffect(() => {
     registerServiceWorker();
-    injectManifest();
   }, []);
 
   // Auto-geoloc on first load
