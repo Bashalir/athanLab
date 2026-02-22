@@ -781,7 +781,7 @@ html.no-css-vars .loading-spinner {
 
 /* ─── RESPONSIVE LANDSCAPE ────────────────────────────────────────── */
 @media (orientation: landscape) and (max-height: 500px) {
-  .clock { font-size: clamp(2.5rem, 8vw, 4rem); }
+  .clock { font-size: clamp(5rem, 12vw, 8rem); }
   .prayer-name-ar { font-size: clamp(1.2rem, 3vw, 1.6rem); }
   .prayer-time { font-size: clamp(1rem, 2.5vw, 1.4rem); }
 }
