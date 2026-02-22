@@ -55,37 +55,10 @@ export function App() {
     }
   }, [nowMins, state.prayers, state.fakeMinutes]);
 
-  // Overlay actif tout le temps sauf ±15 min autour de chaque prière
-  const nightDim = (() => {
-    if (!state.prayers) return 0.65;
-    const { sunriseMins } = state.prayers._raw;
-    const WINDOW = 15;
-    const times = [
-      state.prayers.fajr.mins,
-      sunriseMins,
-      state.prayers.dhuhr.mins,
-      state.prayers.asr.mins,
-      state.prayers.maghrib.mins,
-      state.prayers.isha.mins,
-    ];
-    for (const t of times) {
-      if (t !== null && t !== undefined && nowMins >= t - WINDOW && nowMins <= t + WINDOW) return 0;
-    }
-    return 0.65;
-  })();
-
   return (
     <>
       <LoadingScreen />
       <div id="app">
-        {nightDim > 0 && (
-          <div style={{
-            position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none',
-            background: '#000',
-            opacity: nightDim,
-            transition: 'opacity 120s ease',
-          }} />
-        )}
         <SkySection
           skyState={skyState}
           prayers={state.prayers}
