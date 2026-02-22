@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import type { WeatherConfig, WeatherData } from '../types';
 import { fetchWeather } from '../lib/weatherServices';
 
-const REFRESH_INTERVAL = 30 * 60 * 1000; // 30 minutes
+const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
 export function useWeather(
   lat:     number,
