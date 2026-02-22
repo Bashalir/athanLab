@@ -286,30 +286,30 @@ html.no-css-vars .theme-btn {
   position: absolute;
   top: 0; left: 0; right: 0;
   z-index: 20;
-  height: 52px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 18px 0 20px;
+  padding: 0 20px 0 22px;
   background: var(--c-topbar);
   backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--c-border);
-  font-size: 0.86rem;
+  font-size: 1rem;
   letter-spacing: 0.1em;
   color: var(--c-text-mid);
-  font-weight: 300;
+  font-weight: 400;
 }
 html.ios-device .top-bar {
-  top: 20px;
+  top: 24px;
 }
 html.ios-standalone .top-bar {
-  top: 32px;
+  top: 40px;
 }
 html.no-css-vars.ios-device .top-bar {
-  top: 30px;
+  top: 34px;
 }
 html.no-css-vars.ios-standalone .top-bar {
-  top: 40px;
+  top: 46px;
 }
 .top-bar-left {
   display: flex;
@@ -318,25 +318,25 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 .top-bar-city {
   color: rgba(255,255,255,0.7);
-  font-weight: 400;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
 .top-bar-temp {
   color: rgba(255,255,255,0.85);
-  font-size: 0.95rem;
-  font-weight: 300;
+  font-size: 1.08rem;
+  font-weight: 500;
 }
 .top-bar-desc { color: rgba(255,255,255,0.38); }
-.top-bar-icon { font-size: 1.1rem; opacity: 0.85; }
+.top-bar-icon { font-size: 1.2rem; opacity: 0.9; }
 .top-bar-right {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 .top-bar-wind {
   color: rgba(255,255,255,0.35);
-  font-size: 0.78rem;
+  font-size: 0.88rem;
 }
 
 /* ─── TIME DISPLAY ────────────────────────────────────────────────── */
