@@ -34,7 +34,13 @@ html.no-css-vars .clock {
   font-size: 24vw;
 }
 html.no-css-vars .time-divider::after { color: rgba(255,215,0,0.6); }
-html.no-css-vars .date-hijri { font-family: 'Amiri', serif; color: #2ecc71; text-shadow: 0 0 20px rgba(46,204,113,0.3); }
+html.no-css-vars .date-hijri {
+  font-family: 'Amiri', serif;
+  color: #2ecc71;
+  text-transform: uppercase;
+  opacity: 1;
+  text-shadow: 0 0 24px rgba(46,204,113,0.45);
+}
 html.no-css-vars .prayer-board-wrap { background: rgba(5,5,8,0.96); border-top: 1px solid rgba(46,204,113,0.25); }
 html.no-css-vars .prayer-board { background: rgba(5,5,8,0.96); }
 html.no-css-vars .prayer-item { border-right: 1px solid rgba(255,255,255,0.06); }
@@ -346,9 +352,10 @@ html.no-css-vars .loading-spinner {
   font-size: clamp(1.2rem, 3.5vw, 1.8rem);
   color: var(--c-accent);
   letter-spacing: 0.05em;
-  font-weight: 400;
-  opacity: 0.9;
-  text-shadow: 0 0 20px rgba(var(--c-accent-rgb), 0.3);
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 1;
+  text-shadow: 0 0 24px rgba(var(--c-accent-rgb), 0.45);
 }
 
 /* ─── NEXT PRAYER BANNER ─────────────────────────────────────────── */

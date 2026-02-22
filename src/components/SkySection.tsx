@@ -122,32 +122,58 @@ export function SkySection({
   );
 }
 const getHijriInfo = () => {
-    const now = new Date();
-    const monthsFr = [
-      'janvier', 'fevrier', 'mars', 'avril', 'mai', 'juin',
-      'juillet', 'aout', 'septembre', 'octobre', 'novembre', 'decembre',
-    ];
-    const fallbackDate = `${now.getDate()} ${monthsFr[now.getMonth()] || ''} ${now.getFullYear()}`.trim();
+  const now = new Date();
+  const day = now.getDate();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
 
-    // iOS 9 can miss Intl calendar extensions. Keep rendering stable.
-    try {
-      if (typeof Intl === 'undefined' || typeof Intl.DateTimeFormat !== 'function') {
-        throw new Error('Intl unavailable');
-      }
-      const hijriDateFmt = new Intl.DateTimeFormat('fr-FR-u-ca-islamic', {
-        day: 'numeric', month: 'long', year: 'numeric',
-      });
-      const hijriDayFmt = new Intl.DateTimeFormat('en-u-ca-islamic', { day: 'numeric' });
-      const day = parseInt(hijriDayFmt.format(now), 10);
-      return {
-        dateLabel: hijriDateFmt.format(now),
-        day: Number.isFinite(day) ? day : 15,
-      };
-    } catch {
-      // Fallback for old Safari engines.
-      return {
-        dateLabel: fallbackDate,
-        day: now.getDate() || 15,
-      };
-    }
+  const hijriMonthsFr = [
+    'mouharram',
+    'safar',
+    'rabi al-awwal',
+    'rabi ath-thani',
+    'joumada al-oula',
+    'joumada ath-thania',
+    'rajab',
+    'chaabane',
+    'ramadan',
+    'chawwal',
+    'dhou al-qiada',
+    'dhou al-hijja',
+  ];
+
+  // Civil conversion (tabular Islamic calendar) for legacy browsers.
+  const gToJd = (y: number, m: number, d: number) =>
+    Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
+    Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
+    Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
+    d -
+    32075;
+
+  const jdToHijri = (jd: number) => {
+    let l = jd - 1948440 + 10632;
+    const n = Math.floor((l - 1) / 10631);
+    l = l - 10631 * n + 354;
+    const j =
+      Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
+      Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
+    l =
+      l -
+      Math.floor(((30 - j) / 15) * ((17719 * j) / 50)) -
+      Math.floor((j / 16) * ((15238 * j) / 43)) +
+      29;
+    const m = Math.floor((24 * l) / 709);
+    const d = l - Math.floor((709 * m) / 24);
+    const y = 30 * n + j - 30;
+    return { d, m, y };
   };
+
+  const hijri = jdToHijri(gToJd(year, month, day));
+  const monthName = hijriMonthsFr[hijri.m - 1] || 'ramadan';
+  const dateLabel = `${hijri.d} ${monthName} ${hijri.y}`.toUpperCase();
+
+  return {
+    dateLabel,
+    day: hijri.d,
+  };
+};
