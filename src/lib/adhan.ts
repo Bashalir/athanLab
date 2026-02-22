@@ -85,28 +85,25 @@ export function showAdhanAlert(prayerKey: string) {
 
   const div = document.createElement('div');
   div.id = 'adhan-alert';
-  Object.assign(div.style, {
-    position:       'fixed',
-    top:            '50%',
-    left:           '50%',
-    transform:      'translate(-50%, -50%) scale(0.8)',
-    zIndex:         '50',
-    background:     'rgba(10,8,30,0.92)',
-    backdropFilter: 'blur(24px)',
-    border:         '1px solid rgba(46,204,113,0.35)',
-    borderRadius:   '24px',
-    padding:        '32px 48px',
-    textAlign:      'center',
-    animation:      'adhanReveal 0.5s cubic-bezier(0.34,1.56,0.64,1) forwards',
-    boxShadow:      '0 0 80px rgba(255,180,0,0.15), 0 0 0 1px rgba(255,215,0,0.1)',
-  } as CSSStyleDeclaration);
+  // Legacy-safe modal styling for old Safari/iPad engines.
+  div.style.position = 'fixed';
+  div.style.top = '50%';
+  div.style.left = '50%';
+  div.style.transform = 'translate(-50%, -50%)';
+  div.style.zIndex = '99999';
+  div.style.background = 'rgba(10,8,30,0.96)';
+  div.style.border = '1px solid rgba(46,204,113,0.35)';
+  div.style.borderRadius = '18px';
+  div.style.padding = '24px 22px';
+  div.style.textAlign = 'center';
+  div.style.boxShadow = '0 0 40px rgba(0,0,0,0.5)';
+  div.style.width = '88%';
+  div.style.maxWidth = '420px';
+  div.style.opacity = '1';
+  div.style.display = 'block';
 
   div.innerHTML = `
     <style>
-      @keyframes adhanReveal {
-        from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      }
       @keyframes adhanGlow {
         0%, 100% { text-shadow: 0 0 20px rgba(46,204,113,0.4); }
         50%       { text-shadow: 0 0 50px rgba(255,215,0,0.9), 0 0 100px rgba(255,180,0,0.4); }
