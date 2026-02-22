@@ -10,6 +10,9 @@ const supportsCssVars = (() => {
 if (!supportsCssVars) {
   document.documentElement.classList.add('no-css-vars');
 }
+if ((window.navigator as Navigator & { standalone?: boolean }).standalone) {
+  document.documentElement.classList.add('ios-standalone');
+}
 
 const root = document.getElementById('root');
 if (root) {

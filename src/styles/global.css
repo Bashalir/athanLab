@@ -299,6 +299,9 @@ html.no-css-vars .theme-btn {
   color: var(--c-text-mid);
   font-weight: 300;
 }
+html.ios-standalone .top-bar {
+  top: 20px;
+}
 .top-bar-left {
   display: flex;
   align-items: center;
@@ -451,6 +454,7 @@ html.no-css-vars .theme-btn {
     linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
   background-size: 20px 20px;
   background-position: center;
+  touch-action: manipulation;
 }
 .prayer-item:last-child { border-right: none; }
 

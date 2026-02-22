@@ -18,8 +18,9 @@ export function PrayerItem({ prayerKey: _key, entry, isNext, isPast, debug, onDe
     isPast ? 'past'   : '',
   ].filter(Boolean).join(' ');
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = (e: React.TouchEvent<HTMLDivElement>) => {
     if (!debug || entry.mins === null || !onDebugClick) return;
+    e.preventDefault();
     const now = Date.now();
     if (now - lastTapAtRef.current < 350) {
       onDebugClick();
