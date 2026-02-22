@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import legacy from '@vitejs/plugin-legacy';
 
-export default defineConfig({
-  base: '/athanLab/',
+export default defineConfig(({ command }) => ({
+  base: command === 'build' ? '/athanLab/' : '/',
   plugins: [
     react(),
     legacy({
@@ -22,4 +22,4 @@ export default defineConfig({
   define: {
     __BUILD_ID__: JSON.stringify(`salat-${Date.now()}`),
   },
-});
+}));
