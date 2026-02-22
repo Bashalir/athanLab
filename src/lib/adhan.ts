@@ -6,6 +6,12 @@ const audioCache: Record<string, HTMLAudioElement> = {};
 const AUDIO_BASE = import.meta.env.BASE_URL;
 const SRC_FAJR = `${AUDIO_BASE}athan-fajr.mp3`;
 const SRC_DEFAULT = `${AUDIO_BASE}athan.mp3`;
+const isLegacyIOS = (() => {
+  if (typeof navigator === 'undefined' || typeof document === 'undefined') return false;
+  const ua = navigator.userAgent || '';
+  return /iPad|iPhone|iPod/i.test(ua)
+    && (/OS 9_/i.test(ua) || document.documentElement.classList.contains('no-css-vars'));
+})();
 
 function getAudio(src: string): HTMLAudioElement {
   if (!audioCache[src]) {
@@ -75,7 +81,8 @@ export function triggerAdhan(prayerKey: string) {
   const audio = getAudio(src);
   audio.currentTime = 0;
   audio.play().catch(() => {});
-  showAdhanAlert(prayerKey);
+  // On iPad 2 / iOS 9 kiosk, visual overlays can crash WebKit during audio playback.
+  if (!isLegacyIOS) showAdhanAlert(prayerKey);
 }
 
 // ─── Adhan Alert (DOM) ────────────────────────────────────────────
