@@ -4,7 +4,7 @@ import { useClock }         from '../hooks/useClock';
 import { useWeather }       from '../hooks/useWeather';
 import { checkAdhan, setupAdhanAudioUnlock } from '../lib/adhan';
 import { registerServiceWorker } from '../lib/pwa';
-import { appendHealthLog } from '../lib/healthLog';
+import { appendHealthLog, rotateHealthLogForBuild } from '../lib/healthLog';
 import { httpGetText } from '../lib/http';
 import { LoadingScreen }    from './LoadingScreen';
 import { SkySection }       from './SkySection';
@@ -32,6 +32,7 @@ export function App() {
 
   // PWA init (once)
   useEffect(() => {
+    rotateHealthLogForBuild(__APP_VERSION__);
     registerServiceWorker();
     setupAdhanAudioUnlock();
     appendHealthLog('startup');

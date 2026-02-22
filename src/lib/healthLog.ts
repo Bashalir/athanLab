@@ -1,6 +1,7 @@
 import { storageGet, storageSet, storageRemove } from './safeStorage';
 
 const HEALTH_LOG_KEY = 'app_health_log';
+const HEALTH_LOG_BUILD_KEY = 'app_health_log_build';
 const MAX_ENTRIES = 120;
 
 export function appendHealthLog(event: string): void {
@@ -29,3 +30,14 @@ export function clearHealthLog(): void {
   storageRemove(HEALTH_LOG_KEY);
 }
 
+export function rotateHealthLogForBuild(buildId: string): void {
+  try {
+    const prev = storageGet(HEALTH_LOG_BUILD_KEY);
+    if (prev !== buildId) {
+      storageRemove(HEALTH_LOG_KEY);
+      storageSet(HEALTH_LOG_BUILD_KEY, buildId);
+    }
+  } catch {
+    // Ignore storage failures on old/restricted browsers.
+  }
+}

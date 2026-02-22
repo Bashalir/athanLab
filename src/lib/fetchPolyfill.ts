@@ -10,7 +10,7 @@ type FetchLike = (input: string, init?: { method?: string; headers?: Record<stri
 export function installFetchPolyfill(): void {
   if (typeof window === 'undefined') return;
   if (typeof window.fetch === 'function') return;
-  if (typeof XMLHttpRequest !== 'function') return;
+  if (typeof XMLHttpRequest === 'undefined') return;
 
   const fetchPolyfill: FetchLike = (input, init) => new Promise((resolve, reject) => {
     try {
@@ -54,4 +54,3 @@ export function installFetchPolyfill(): void {
 
   (window as Window & { fetch?: FetchLike }).fetch = fetchPolyfill;
 }
-

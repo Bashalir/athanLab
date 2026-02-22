@@ -1,5 +1,5 @@
 export function httpGetText(url: string, timeoutMs = 10000): Promise<string> {
-  if (typeof XMLHttpRequest === 'function') {
+  if (typeof XMLHttpRequest !== 'undefined') {
     return new Promise((resolve, reject) => {
       try {
         const xhr = new XMLHttpRequest();
@@ -25,5 +25,16 @@ export function httpGetText(url: string, timeoutMs = 10000): Promise<string> {
 }
 
 export function httpGetJSON<T = unknown>(url: string, timeoutMs = 10000): Promise<T> {
-  return httpGetText(url, timeoutMs).then((txt) => JSON.parse(txt) as T);
+  return httpGetText(url, timeoutMs).then((txt) => {
+    const body = (txt || '').trim();
+    if (!body) {
+      throw new Error('Empty response');
+    }
+    try {
+      return JSON.parse(body) as T;
+    } catch {
+      const preview = body.slice(0, 40).replace(/\s+/g, ' ');
+      throw new Error(`Invalid JSON: ${preview}`);
+    }
+  });
 }
