@@ -107,6 +107,7 @@ export function useAppState() {
   // Default timetable fallback: load bundled GMP JSON when no custom file is set.
   useEffect(() => {
     if (state.customJSON) return;
+    if (typeof fetch !== 'function') return;
     let cancelled = false;
     const url = `${import.meta.env.BASE_URL}gmp-2026.json`;
 
