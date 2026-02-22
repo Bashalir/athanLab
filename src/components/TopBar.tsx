@@ -9,7 +9,7 @@ interface Props {
 export function TopBar({ cityName, weather, onSettings }: Props) {
   return (
     <div className="top-bar">
-      <div className="top-bar-center">
+      <div className="top-bar-right-group">
         <table className="top-weather-table" role="presentation">
           <tbody>
             <tr>
@@ -23,8 +23,6 @@ export function TopBar({ cityName, weather, onSettings }: Props) {
             </tr>
           </tbody>
         </table>
-      </div>
-      <div className="top-bar-right">
         <button className="settings-btn" onClick={onSettings}>⚙</button>
       </div>
     </div>

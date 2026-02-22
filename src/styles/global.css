@@ -313,8 +313,9 @@ html.no-css-vars .theme-btn {
   top: 0; left: 0; right: 0;
   z-index: 20;
   height: 64px;
-  display: block;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
   padding: 0 20px 0 22px;
   background: transparent;
   backdrop-filter: none;
@@ -336,18 +337,19 @@ html.no-css-vars.ios-device .top-bar {
 html.no-css-vars.ios-standalone .top-bar {
   top: 46px;
 }
-.top-bar-center {
-  display: inline-block;
-  margin-top: 20px;
-  max-width: calc(100% - 56px);
+.top-bar-right-group {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  gap: 10px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 .top-weather-table {
   border-collapse: separate;
   border-spacing: 0;
-  margin: 0 auto;
+  margin: 0;
+  max-width: calc(100% - 52px);
 }
 .top-weather-table td {
   padding: 0 8px;
@@ -367,11 +369,6 @@ html.no-css-vars.ios-standalone .top-bar {
 }
 .top-bar-desc { color: rgba(255,255,255,0.38); }
 .top-bar-icon { font-size: 1.2rem; opacity: 0.9; }
-.top-bar-right {
-  position: absolute;
-  right: 14px;
-  top: 18px;
-}
 .top-bar-wind {
   color: rgba(255,255,255,0.35);
   font-size: 0.88rem;
