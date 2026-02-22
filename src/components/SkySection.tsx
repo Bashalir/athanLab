@@ -142,38 +142,56 @@ const getHijriInfo = () => {
     'dhou al-hijja',
   ];
 
-  // Civil conversion (tabular Islamic calendar) for legacy browsers.
-  const gToJd = (y: number, m: number, d: number) =>
-    Math.floor((1461 * (y + 4800 + Math.floor((m - 14) / 12))) / 4) +
-    Math.floor((367 * (m - 2 - 12 * Math.floor((m - 14) / 12))) / 12) -
-    Math.floor((3 * Math.floor((y + 4900 + Math.floor((m - 14) / 12)) / 100)) / 4) +
-    d -
-    32075;
+  try {
+    if (typeof Intl !== 'undefined' && typeof Intl.DateTimeFormat === 'function') {
+      const fmt = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      });
+      const parts = fmt.formatToParts(now);
+      const dPart = parts.find((p) => p.type === 'day')?.value;
+      const mPart = parts.find((p) => p.type === 'month')?.value || '';
+      const yPart = parts.find((p) => p.type === 'year')?.value || '';
+      const dNum = parseInt(dPart || '15', 10);
+      const dateLabel = `${dPart || '15'} ${mPart} ${yPart}`.toUpperCase();
+      return { dateLabel, day: Number.isFinite(dNum) ? dNum : 15 };
+    }
+  } catch {
+    // Fallback below.
+  }
 
+  // Civil conversion fallback for legacy browsers.
+  const gToJd = (y: number, m: number, d: number) => {
+    const a = Math.floor((14 - m) / 12);
+    const y2 = y + 4800 - a;
+    const m2 = m + 12 * a - 3;
+    return (
+      d +
+      Math.floor((153 * m2 + 2) / 5) +
+      365 * y2 +
+      Math.floor(y2 / 4) -
+      Math.floor(y2 / 100) +
+      Math.floor(y2 / 400) -
+      32045
+    );
+  };
+  const iToJd = (y: number, m: number, d: number) =>
+    d + Math.ceil(29.5 * (m - 1)) + (y - 1) * 354 + Math.floor((3 + 11 * y) / 30) + 1948439 - 1;
   const jdToHijri = (jd: number) => {
-    let l = jd - 1948440 + 10632;
-    const n = Math.floor((l - 1) / 10631);
-    l = l - 10631 * n + 354;
-    const j =
-      Math.floor((10985 - l) / 5316) * Math.floor((50 * l) / 17719) +
-      Math.floor(l / 5670) * Math.floor((43 * l) / 15238);
-    l =
-      l -
-      Math.floor(((30 - j) / 15) * ((17719 * j) / 50)) -
-      Math.floor((j / 16) * ((15238 * j) / 43)) +
-      29;
-    const m = Math.floor((24 * l) / 709);
-    const d = l - Math.floor((709 * m) / 24);
-    const y = 30 * n + j - 30;
+    const y = Math.floor((30 * (jd - 1948439) + 10646) / 10631);
+    let m = Math.ceil((jd - 29 - iToJd(y, 1, 1)) / 29.5) + 1;
+    m = Math.min(12, Math.max(1, m));
+    const d = jd - iToJd(y, m, 1) + 1;
     return { d, m, y };
   };
 
-  const hijri = jdToHijri(gToJd(year, month, day));
+  // Align fallback with commonly observed Umm al-Qura dates.
+  const FALLBACK_OFFSET_DAYS = -1;
+  const hijri = jdToHijri(gToJd(year, month, day) + FALLBACK_OFFSET_DAYS);
   const monthName = hijriMonthsFr[hijri.m - 1] || 'ramadan';
-  const dateLabel = `${hijri.d} ${monthName} ${hijri.y}`.toUpperCase();
-
   return {
-    dateLabel,
+    dateLabel: `${hijri.d} ${monthName} ${hijri.y}`.toUpperCase(),
     day: hijri.d,
   };
 };
