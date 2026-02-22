@@ -104,5 +104,24 @@ export function useAppState() {
     } catch { /* ignore */ }
   }, []);
 
+  // Default timetable fallback: load bundled GMP JSON when no custom file is set.
+  useEffect(() => {
+    if (state.customJSON) return;
+    let cancelled = false;
+    const url = `${import.meta.env.BASE_URL}gmp-2026.json`;
+
+    fetch(url)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((json) => {
+        if (cancelled || !json) return;
+        dispatch({ type: 'SET_CUSTOM_JSON', json, cityName: 'GMP 2026' });
+      })
+      .catch(() => {
+        // Keep astronomical fallback if JSON is unavailable.
+      });
+
+    return () => { cancelled = true; };
+  }, [state.customJSON]);
+
   return { state, dispatch };
 }
