@@ -315,7 +315,7 @@ html.no-css-vars .theme-btn {
   height: 64px;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   padding: 0 20px 0 22px;
   background: transparent;
   backdrop-filter: none;
@@ -340,7 +340,7 @@ html.no-css-vars.ios-standalone .top-bar {
 .top-bar-right-group {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   width: 100%;
   gap: 10px;
   white-space: nowrap;
