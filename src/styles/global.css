@@ -300,7 +300,10 @@ html.no-css-vars .theme-btn {
   font-weight: 300;
 }
 html.ios-standalone .top-bar {
-  top: 20px;
+  top: 32px;
+}
+html.no-css-vars.ios-standalone .top-bar {
+  top: 40px;
 }
 .top-bar-left {
   display: flex;
