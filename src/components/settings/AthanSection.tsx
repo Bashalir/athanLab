@@ -7,7 +7,6 @@ interface Props {
 export function AthanSection({ onClose }: Props) {
   function testAdhan() {
     triggerAdhan('fajr');
-    onClose();
   }
 
   return (

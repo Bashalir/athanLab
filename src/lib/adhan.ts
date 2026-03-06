@@ -7,48 +7,63 @@ const AUDIO_BASE = import.meta.env.BASE_URL;
 const SRC_FAJR = `${AUDIO_BASE}athan-fajr.mp3`;
 const SRC_DEFAULT = `${AUDIO_BASE}athan.mp3`;
 
-// Single shared audio element — iOS only unlocks one element per user gesture.
-let sharedAudio: HTMLAudioElement | null = null;
-let audioUnlocked = false;
+// Two DOM-embedded <audio> elements — iOS requires elements in the DOM
+// and unlocked individually. Changing src after unlock re-locks on iOS 9.
+let audioFajr: HTMLAudioElement | null = null;
+let audioDefault: HTMLAudioElement | null = null;
 
-function getSharedAudio(): HTMLAudioElement {
-  if (!sharedAudio) {
-    sharedAudio = new Audio();
-    sharedAudio.preload = 'auto';
-  }
-  return sharedAudio;
+function ensureAudioElements() {
+  if (audioFajr) return;
+  audioFajr = document.createElement('audio');
+  audioFajr.src = SRC_FAJR;
+  audioFajr.preload = 'auto';
+  audioFajr.setAttribute('playsinline', '');
+  audioFajr.setAttribute('webkit-playsinline', '');
+  audioFajr.style.display = 'none';
+  document.body.appendChild(audioFajr);
+
+  audioDefault = document.createElement('audio');
+  audioDefault.src = SRC_DEFAULT;
+  audioDefault.preload = 'auto';
+  audioDefault.setAttribute('playsinline', '');
+  audioDefault.setAttribute('webkit-playsinline', '');
+  audioDefault.style.display = 'none';
+  document.body.appendChild(audioDefault);
 }
 
 function safePlay(audio: HTMLAudioElement) {
   try {
-    const maybePromise = audio.play() as Promise<void> | void;
+    var maybePromise = audio.play() as Promise<void> | void;
     if (maybePromise && typeof (maybePromise as Promise<void>).then === 'function') {
-      maybePromise.catch(() => {});
+      maybePromise.catch(function() {});
     }
-  } catch {
+  } catch (e) {
     // Ignore play errors on restricted browsers.
   }
 }
 
 export function pauseAdhan() {
-  if (sharedAudio) {
-    sharedAudio.pause();
-  }
+  if (audioFajr) audioFajr.pause();
+  if (audioDefault) audioDefault.pause();
 }
 
 export function setupAdhanAudioUnlock() {
-  const unlock = () => {
-    if (audioUnlocked) return;
-    audioUnlocked = true;
-    const a = getSharedAudio();
-    a.src = SRC_DEFAULT;
-    a.volume = 0.01;
-    safePlay(a);
-    setTimeout(() => {
-      a.pause();
-      a.currentTime = 0;
-      a.volume = 1;
-    }, 200);
+  var unlocked = false;
+  var unlock = function() {
+    if (unlocked) return;
+    unlocked = true;
+    ensureAudioElements();
+    // Unlock both elements with a near-silent play inside the user gesture.
+    [audioFajr, audioDefault].forEach(function(a) {
+      if (!a) return;
+      a.volume = 0.01;
+      safePlay(a);
+      setTimeout(function() {
+        a.pause();
+        a.currentTime = 0;
+        a.volume = 1;
+      }, 150);
+    });
     document.removeEventListener('touchstart', unlock);
     document.removeEventListener('touchend', unlock);
     document.removeEventListener('click', unlock);
@@ -95,9 +110,8 @@ export function triggerDebugAdhan(prayerKey: PrayerKey, prayers: PrayerTimes) {
 }
 
 export function triggerAdhan(prayerKey: string) {
-  const src = prayerKey === 'fajr' ? SRC_FAJR : SRC_DEFAULT;
-  const audio = getSharedAudio();
-  audio.src = src;
+  ensureAudioElements();
+  const audio = prayerKey === 'fajr' ? audioFajr! : audioDefault!;
   audio.currentTime = 0;
   audio.volume = 1;
   safePlay(audio);
