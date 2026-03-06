@@ -1,6 +1,6 @@
 {
-  "name": "مواقيت الصلاة",
-  "short_name": "Salat",
+  "name": "AthanLab",
+  "short_name": "AthanLab",
   "start_url": "/athanLab/",
   "scope": "/athanLab/",
   "display": "standalone",
