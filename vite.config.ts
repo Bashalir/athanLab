@@ -22,7 +22,7 @@ function getBuildLabel() {
 }
 
 export default defineConfig(({ command }) => ({
-  base: command === 'build' ? '/athanLab/' : '/',
+  base: command === 'build' ? (process.env.CF_PAGES ? '/' : '/athanLab/') : '/',
   plugins: [
     react(),
     legacy({
