@@ -45,23 +45,27 @@ export function setupAdhanAudioUnlock() {
     unlocked = true;
     const targets = [SRC_FAJR, SRC_DEFAULT].map(getAudio);
     targets.forEach((a) => {
-      a.muted = true;
+      a.volume = 0.01;
       safePlay(
         a,
         () => {
-          a.pause();
-          a.currentTime = 0;
-          a.muted = false;
+          setTimeout(() => {
+            a.pause();
+            a.currentTime = 0;
+            a.volume = 1;
+          }, 100);
         },
         () => {
-          a.muted = false;
+          a.volume = 1;
         }
       );
     });
+    document.removeEventListener('touchstart', unlock);
     document.removeEventListener('touchend', unlock);
     document.removeEventListener('click', unlock);
   };
 
+  document.addEventListener('touchstart', unlock, { passive: true });
   document.addEventListener('touchend', unlock, { passive: true });
   document.addEventListener('click', unlock);
 }
@@ -96,11 +100,8 @@ export function checkAdhan(nowMins: number, prayers: PrayerTimes) {
 }
 
 export function triggerDebugAdhan(prayerKey: PrayerKey, prayers: PrayerTimes) {
-  const today = syncAdhanDay();
   if (prayers[prayerKey].mins === null) return;
-  const key = `${today}-${prayerKey}`;
-  if (playedPrayers.has(key)) return;
-  playedPrayers.add(key);
+  pauseAdhan();
   triggerAdhan(prayerKey);
 }
 
@@ -108,6 +109,7 @@ export function triggerAdhan(prayerKey: string) {
   const src = prayerKey === 'fajr' ? SRC_FAJR : SRC_DEFAULT;
   const audio = getAudio(src);
   audio.currentTime = 0;
+  audio.volume = 1;
   safePlay(audio);
   showAdhanText(prayerKey);
 }
