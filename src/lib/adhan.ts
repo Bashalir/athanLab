@@ -3,63 +3,52 @@ import { NAMES_FR } from './prayerCalc';
 type PrayerKey = 'fajr' | 'dhuhr' | 'asr' | 'maghrib' | 'isha';
 
 // ─── Adhan Audio ──────────────────────────────────────────────────
-const audioCache: Record<string, HTMLAudioElement> = {};
 const AUDIO_BASE = import.meta.env.BASE_URL;
 const SRC_FAJR = `${AUDIO_BASE}athan-fajr.mp3`;
 const SRC_DEFAULT = `${AUDIO_BASE}athan.mp3`;
-function safePlay(audio: HTMLAudioElement, onSuccess?: () => void, onFailure?: () => void) {
+
+// Single shared audio element — iOS only unlocks one element per user gesture.
+let sharedAudio: HTMLAudioElement | null = null;
+let audioUnlocked = false;
+
+function getSharedAudio(): HTMLAudioElement {
+  if (!sharedAudio) {
+    sharedAudio = new Audio();
+    sharedAudio.preload = 'auto';
+  }
+  return sharedAudio;
+}
+
+function safePlay(audio: HTMLAudioElement) {
   try {
     const maybePromise = audio.play() as Promise<void> | void;
     if (maybePromise && typeof (maybePromise as Promise<void>).then === 'function') {
-      maybePromise
-        .then(() => { if (onSuccess) onSuccess(); })
-        .catch(() => { if (onFailure) onFailure(); });
-      return;
+      maybePromise.catch(() => {});
     }
-    if (onSuccess) onSuccess();
   } catch {
-    if (onFailure) onFailure();
+    // Ignore play errors on restricted browsers.
   }
-}
-
-function getAudio(src: string): HTMLAudioElement {
-  if (!audioCache[src]) {
-    audioCache[src] = new Audio(src);
-    audioCache[src].preload = 'auto';
-  }
-  return audioCache[src];
 }
 
 export function pauseAdhan() {
-  for (const src in audioCache) {
-    if (Object.prototype.hasOwnProperty.call(audioCache, src)) {
-      audioCache[src].pause();
-    }
+  if (sharedAudio) {
+    sharedAudio.pause();
   }
 }
 
 export function setupAdhanAudioUnlock() {
-  let unlocked = false;
   const unlock = () => {
-    if (unlocked) return;
-    unlocked = true;
-    const targets = [SRC_FAJR, SRC_DEFAULT].map(getAudio);
-    targets.forEach((a) => {
-      a.volume = 0.01;
-      safePlay(
-        a,
-        () => {
-          setTimeout(() => {
-            a.pause();
-            a.currentTime = 0;
-            a.volume = 1;
-          }, 100);
-        },
-        () => {
-          a.volume = 1;
-        }
-      );
-    });
+    if (audioUnlocked) return;
+    audioUnlocked = true;
+    const a = getSharedAudio();
+    a.src = SRC_DEFAULT;
+    a.volume = 0.01;
+    safePlay(a);
+    setTimeout(() => {
+      a.pause();
+      a.currentTime = 0;
+      a.volume = 1;
+    }, 200);
     document.removeEventListener('touchstart', unlock);
     document.removeEventListener('touchend', unlock);
     document.removeEventListener('click', unlock);
@@ -107,7 +96,8 @@ export function triggerDebugAdhan(prayerKey: PrayerKey, prayers: PrayerTimes) {
 
 export function triggerAdhan(prayerKey: string) {
   const src = prayerKey === 'fajr' ? SRC_FAJR : SRC_DEFAULT;
-  const audio = getAudio(src);
+  const audio = getSharedAudio();
+  audio.src = src;
   audio.currentTime = 0;
   audio.volume = 1;
   safePlay(audio);
